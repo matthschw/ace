@@ -23,32 +23,10 @@ $ mvn install
 - Cadence Spectre 19.1 or newer
 - Java 1.8 or newer
 
-## Environments
-
-- 
-
-Please install the following dependencies manually:
-
-- [nutmeg-reader](https://github.com/electronics-and-drives/nutmeg-reader) 
-- [cadence-remote-control](https://github.com/electronics-and-drives/cadence-remote-control) 
-- [cadence-remote-control](https://github.com/electronics-and-drives/spectre-remote-control) 
-- [analog-results-database](https://github.com/electronics-and-drives/analog-results-database) 
-- [ace](https://github.com/matthschw/ace) 
-
-Clone the corresponding repositories, enter the directory and execute
-
-```bash
-$ mvn install
-```
-## Dependencies
-
-- Cadence Spectre 19.1 or newer
-- Java 1.8 or newer
 
 ## Environments
 
 - `SingleEndedOpampEnvironment`
-`SingleEndedOpampEnvironment`
 
 ## Backends
 
