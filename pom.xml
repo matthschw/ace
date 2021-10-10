@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edlab.eda</groupId>
+	<artifactId>ace</artifactId>
+	<version>0.0.1</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+				<configuration>
+					<jvm>${env.JAVA_HOME}/bin/java</jvm>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.3.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>edlab.eda</groupId>
+			<artifactId>analog-results-database</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>edlab.eda</groupId>
+			<artifactId>reader.nutmeg</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>edlab.eda</groupId>
+			<artifactId>cadence.rc.virtuoso</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>edlab.eda</groupId>
+			<artifactId>cadence.rc.spectre</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20210307</version>
+		</dependency>
+	</dependencies>
+
+	<organization>
+		<name>Electronics &amp; Drives</name>
+		<url>https://www.electronics-and-drives.de/</url>
+	</organization>
+</project>
