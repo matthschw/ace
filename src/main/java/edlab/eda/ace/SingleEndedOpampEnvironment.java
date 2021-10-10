@@ -18,9 +18,9 @@ import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
 
-public class SingleEndedOpampCharacterization extends CircuitCharacterization {
+public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
-  public SingleEndedOpampCharacterization(SpectreFactory factory,
+  public SingleEndedOpampEnvironment(SpectreFactory factory,
       JSONObject jsonObject, String netlist, File[] includeDirs,
       Set<String> blacklistAnalyses) {
 
@@ -42,12 +42,12 @@ public class SingleEndedOpampCharacterization extends CircuitCharacterization {
     this.blacklistAnalyses = blacklistAnalyses;
   }
 
-  public static SingleEndedOpampCharacterization get(String simDir,
+  public static SingleEndedOpampEnvironment get(String simDir,
       String circuitDir, String[] includeDirs) {
     return get(simDir, circuitDir, includeDirs, new String[] {});
   }
 
-  public static SingleEndedOpampCharacterization get(String simDir,
+  public static SingleEndedOpampEnvironment get(String simDir,
       String circuitDir, String[] includeDirs, String[] blacklistAnalyses) {
 
     File simDirFile = new File(simDir);
@@ -77,7 +77,7 @@ public class SingleEndedOpampCharacterization extends CircuitCharacterization {
     }
 
     File jsonFile = new File(circuitDirFile,
-        CircuitCharacterization.JSON_FILE_NAME);
+        AnalogCircuitEnvironment.JSON_FILE_NAME);
 
     if (!(jsonFile.exists() && jsonFile.canRead())) {
 
@@ -99,7 +99,7 @@ public class SingleEndedOpampCharacterization extends CircuitCharacterization {
     }
 
     File netlistFile = new File(circuitDirFile,
-        CircuitCharacterization.NETLIST_FILE_NAME);
+        AnalogCircuitEnvironment.NETLIST_FILE_NAME);
 
     if (!(netlistFile.exists() && netlistFile.canRead())) {
 
@@ -143,7 +143,7 @@ public class SingleEndedOpampCharacterization extends CircuitCharacterization {
       blacklistAnalysesSet.add(blacklistAnalyses[i]);
     }
 
-    return new SingleEndedOpampCharacterization(factory, jsonObj, netlist,
+    return new SingleEndedOpampEnvironment(factory, jsonObj, netlist,
         includeDirFiles, blacklistAnalysesSet);
   }
 

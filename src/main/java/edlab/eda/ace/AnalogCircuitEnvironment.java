@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import edlab.eda.cadence.rc.spectre.SpectreSession;
 
-public abstract class CircuitCharacterization {
+public abstract class AnalogCircuitEnvironment {
 
   public static final String NETLIST_FILE_NAME = "input.scs";
   public static final String JSON_FILE_NAME = "properties.json";
