@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
-import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;

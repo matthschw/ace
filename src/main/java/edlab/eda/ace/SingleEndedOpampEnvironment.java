@@ -242,14 +242,14 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
       RealResultsDatabase dcmatchResults = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-      
+
       while (iterator.hasNext()) {
 
         key = iterator.next();
         performance = performances.getJSONObject(key);
 
         reference = performance.getString(REFERENCE_ID);
-        
+
         this.performanceValues.put(key,
             dcmatchResults.getRealValue(reference).getValue());
       }
@@ -325,6 +325,12 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
       this.performanceValues.put("sr_f",
           (lower - upper) / (point2.getValue() - point1.getValue()));
+
+      this.performanceValues.put("overshoot_r",
+          rising.ymax().getValue() / this.getParameterValues().get("vs") * 2
+              - 1);
+      this.performanceValues.put("overshoot_f", 1
+          - falling.ymin().getValue() / this.getParameterValues().get("vs") * 2);
 
     } else {
 
