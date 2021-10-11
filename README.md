@@ -2,8 +2,9 @@
 
 Analog Circuit Characterization Library
 
-## Installation
 
+
+## Installation
 
 Please install the following dependencies manually:
 
@@ -13,16 +14,19 @@ Please install the following dependencies manually:
 - [analog-results-database](https://github.com/electronics-and-drives/analog-results-database) 
 - [ace](https://github.com/matthschw/ace) 
 
-Clone the corresponding repositories, enter the directory and execute
-
+Clone the corresponding repositories, 
+```bash
+$ git clone --recursive  <PATH>
+```
+enter the directory and execute
 ```bash
 $ mvn install
 ```
+
 ## Dependencies
 
 - Cadence Spectre 19.1 or newer
 - Java 1.8 or newer
-
 
 ## Environments
 
@@ -30,9 +34,25 @@ $ mvn install
 
 ## Backends
 
+Backends are provided in the following technologies (PDKs).
+They are added as submodule in `./resources`.
+Some of the here referenced backends are proprietary,
+
 - [generic-5V](https://github.com/matthschw/ace-generic-5V)
+  - [ ] op1
+  - [ ] op2
+  - [ ] op3
+  - [ ] op4
 - [generic-1V](https://github.com/matthschw/ace-generic-1V)
+  - [ ] op1
+  - [ ] op2
+  - [ ] op3
+  - [ ] op4
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
+  - [ ] op1
+  - [x] op2
+  - [ ] op3
+  - [ ] op4
 
 ## License
 
