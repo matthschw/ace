@@ -43,7 +43,7 @@ Some of the here referenced backends are proprietary.
 
 - [generic-5V](https://github.com/matthschw/ace-generic-5V)
   - [ ] op1
-  - [ ] op2
+  - [x] op2
   - [ ] op3
   - [ ] op4
 - [generic-1V](https://github.com/matthschw/ace-generic-1V)
