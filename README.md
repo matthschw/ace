@@ -31,6 +31,7 @@ $ mvn install
 ## Environments
 
 - *Single-Ended Operational Amplifier*
+
   The environment `SingleEndedOpampEnvironment` is utilized to extract
   common performances of a single-ended operational amplifier.
 

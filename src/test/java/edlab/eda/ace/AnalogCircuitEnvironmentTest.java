@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 class AnalogCircuitEnvironmentTest {
+
+  public static final int NUM_OF_TESTS = 10;
 
   @Test
   void test() {
@@ -61,10 +64,12 @@ class AnalogCircuitEnvironmentTest {
               switch (jsonObj.getString("environment")) {
 
               case "SingleEndedOpampEnvironment":
+
                 env = SingleEndedOpampEnvironment.get(
                     resourcesFile.getAbsoluteFile().toString(),
                     subDirectoryFile.getAbsoluteFile().toString(),
-                    new String[] { jsonObj.getString("models") });
+                    new String[] { jsonObj.getString("models") },
+                    new String[] {});
                 break;
 
               default:
@@ -74,17 +79,32 @@ class AnalogCircuitEnvironmentTest {
               }
 
               if (env != null) {
-                
-                env.simulate();
-                
-                env.stop();
+
+                try {
+
+                  // simulate the circuit once
+                  env.simulate();
+
+                  for (int i = 0; i < NUM_OF_TESTS; i++) {
+                    env.set(env.getRandomSizingParameters());
+                    env.simulate();
+                  }
+                  
+                  // stop the environment
+                  env.stop();
+
+                } catch (Exception e) {
+                  fail(e.getMessage());
+                }
 
               } else {
+
                 fail("Cannot create environment for \""
                     + subDirectoryFile.getAbsolutePath() + "\"");
               }
 
             } catch (Exception e) {
+              e.printStackTrace();
               fail("Unable to read JSON \"" + jsonFile.getAbsolutePath()
                   + "\"\n\t" + e.getMessage());
             }
