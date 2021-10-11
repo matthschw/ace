@@ -1,7 +1,7 @@
 # AC²E
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
 
 Analog Circuit Characterization Library
-
 
 
 ## Installation
@@ -25,18 +25,20 @@ $ mvn install
 
 ## Dependencies
 
-- Cadence Spectre 19.1 or newer
-- Java 1.8 or newer
+- [Cadence® Spectre®](https://www.cadence.com/ko_KR/home/tools/custom-ic-analog-rf-design/circuit-simulation/spectre-simulation-platform.html) 19.1 or newer
+- [OpenJDK](https://openjdk.java.net/) 1.8 or newer 
 
 ## Environments
 
-- `SingleEndedOpampEnvironment`
+- *Single-Ended Operational Amplifier*
+  The environment `SingleEndedOpampEnvironment` is utilized to extract
+  common performances of a single-ended operational amplifier.
 
 ## Backends
 
 Backends are provided in the following technologies (PDKs).
 They are added as submodule in `./resources`.
-Some of the here referenced backends are proprietary,
+Some of the here referenced backends are proprietary.
 
 - [generic-5V](https://github.com/matthschw/ace-generic-5V)
   - [ ] op1
