@@ -67,8 +67,7 @@ class AnalogCircuitEnvironmentTest {
                 env = SingleEndedOpampEnvironment.get(
                     resourcesFile.getAbsoluteFile().toString(),
                     subDirectoryFile.getAbsoluteFile().toString(),
-                    new String[] { jsonObj.getString("models") },
-                    new String[] {});
+                    new String[] { jsonObj.getString("models") });
                 break;
 
               default:
@@ -88,9 +87,6 @@ class AnalogCircuitEnvironmentTest {
                     env.set(env.getRandomSizingParameters());
                     env.simulate();
                   }
-
-                  // stop the environment
-                  env.stop();
 
                 } catch (Exception e) {
                   System.err.println(e);

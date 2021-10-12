@@ -3,7 +3,6 @@ package edlab.eda.ace;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +21,6 @@ import edlab.eda.reader.nutmeg.NutmegComplexPlot;
 
 /**
  * Environment for characterization of a single-ended operational amplifier.
- *
  */
 public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
@@ -40,10 +38,9 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
   public static final String DC4_ANALYSIS_ID = "dc4";
 
   private SingleEndedOpampEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, String netlist, File[] includeDirs,
-      Set<String> blacklistAnalyses) {
+      JSONObject jsonObject, String netlist, File[] includeDirs) {
 
-    super(factory, jsonObject, netlist, includeDirs, blacklistAnalyses);
+    super(factory, jsonObject, netlist, includeDirs);
   }
 
   /**
@@ -62,27 +59,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
    */
   public static SingleEndedOpampEnvironment get(String simDir,
       String circuitDir, String[] includeDirs) {
-    return get(simDir, circuitDir, includeDirs, new String[] {});
-  }
-
-  /**
-   * Get a new environment for a single-ended operational amplifier
-   * 
-   * @param simDir            Directory where simulation results are stored
-   * @param circuitDir        Directory that contains all information of the
-   *                          circuit. The directory contains the files
-   *                          "input.scs" and "properties.json".
-   * @param includeDirs       Array of include directories for simulation. These
-   *                          include directories typically reference the model
-   *                          files from the PDK.
-   * @param blacklistAnalyses Set of analyses to be ignored during
-   *                          characterization.
-   * 
-   * @return object of {@link SingleEndedOpampEnvironment} when all parameters
-   *         are valid, <code>null</code> otherwise
-   */
-  public static SingleEndedOpampEnvironment get(String simDir,
-      String circuitDir, String[] includeDirs, String[] blacklistAnalyses) {
 
     File simDirFile = new File(simDir);
 
@@ -100,7 +76,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    factory.setTimeout(5, TimeUnit.MINUTES);
+    factory.setTimeout(15, TimeUnit.MINUTES);
 
     File circuitDirFile = new File(circuitDir);
 
@@ -172,25 +148,19 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       includeDirFiles[i] = includeDir;
     }
 
-    Set<String> blacklistAnalysesSet = new HashSet<String>();
-
-    for (int i = 0; i < blacklistAnalyses.length; i++) {
-      blacklistAnalysesSet.add(blacklistAnalyses[i]);
-    }
-
     return new SingleEndedOpampEnvironment(factory, jsonObj, netlist,
-        includeDirFiles, blacklistAnalysesSet);
+        includeDirFiles);
   }
 
   @Override
-  public SingleEndedOpampEnvironment simulate() {
+  public SingleEndedOpampEnvironment simulate(Set<String> blacklistAnalyses) {
 
     List<NutmegPlot> plots;
 
-    if (this.blacklistAnalyses.isEmpty()) {
+    if (blacklistAnalyses == null || blacklistAnalyses.isEmpty()) {
       plots = this.session.simulate();
     } else {
-      plots = this.session.simulate(this.blacklistAnalyses);
+      plots = this.session.simulate(blacklistAnalyses);
     }
 
     int resultIdentifier = 0;
@@ -207,7 +177,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         .getJSONObject(DCOP_ANALYSIS_ID);
     iterator = performances.keys();
 
-    if (!this.blacklistAnalyses.contains(DCOP_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(DCOP_ANALYSIS_ID)) {
 
       RealResultsDatabase dcopResults = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
@@ -238,7 +208,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         .getJSONObject(DCMATCH_ANALYSIS_ID);
     iterator = performances.keys();
 
-    if (!this.blacklistAnalyses.contains(DCMATCH_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(DCMATCH_ANALYSIS_ID)) {
 
       RealResultsDatabase dcmatchResults = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
@@ -249,7 +219,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         performance = performances.getJSONObject(key);
 
         reference = performance.getString(REFERENCE_ID);
-
         this.performanceValues.put(key,
             dcmatchResults.getRealValue(reference).getValue());
       }
@@ -265,7 +234,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "stb" analysis
-    if (!this.blacklistAnalyses.contains(STB_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(STB_ANALYSIS_ID)) {
 
       ComplexResultsDatabase stb = ComplexResultsDatabase.buildResultDatabase(
           (NutmegComplexPlot) plots.get(resultIdentifier++));
@@ -299,7 +268,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "tran" analysis
-    if (!this.blacklistAnalyses.contains(TRAN_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(TRAN_ANALYSIS_ID)) {
 
       RealResultsDatabase tran = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
@@ -329,8 +298,8 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("overshoot_r",
           rising.ymax().getValue() / this.getParameterValues().get("vs") * 2
               - 1);
-      this.performanceValues.put("overshoot_f", 1
-          - falling.ymin().getValue() / this.getParameterValues().get("vs") * 2);
+      this.performanceValues.put("overshoot_f", 1 - falling.ymin().getValue()
+          / this.getParameterValues().get("vs") * 2);
 
     } else {
 
@@ -339,7 +308,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "noise" analysis
-    if (!this.blacklistAnalyses.contains(NOISE_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(NOISE_ANALYSIS_ID)) {
 
       RealResultsDatabase noise = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
@@ -364,7 +333,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "dc1" analysis
-    if (!this.blacklistAnalyses.contains(DC1_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(DC1_ANALYSIS_ID)) {
 
       RealResultsDatabase outswing = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
@@ -397,7 +366,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "xf" analysis
-    if (!this.blacklistAnalyses.contains(XF_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(XF_ANALYSIS_ID)) {
 
       ComplexResultsDatabase tf = ComplexResultsDatabase.buildResultDatabase(
           (NutmegComplexPlot) plots.get(resultIdentifier++));
@@ -429,7 +398,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "ac" analysis
-    if (!this.blacklistAnalyses.contains(AC_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(AC_ANALYSIS_ID)) {
 
       ComplexResultsDatabase inswing = ComplexResultsDatabase
           .buildResultDatabase(
@@ -454,7 +423,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "dc3" analysis
-    if (!this.blacklistAnalyses.contains(DC3_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(DC3_ANALYSIS_ID)) {
 
       RealResultsDatabase outshortl = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
@@ -467,7 +436,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     }
 
     // Extract the result from "dc4" analysis
-    if (!this.blacklistAnalyses.contains(DC4_ANALYSIS_ID)) {
+    if (!blacklistAnalyses.contains(DC4_ANALYSIS_ID)) {
 
       RealResultsDatabase outshorth = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));

@@ -3,6 +3,7 @@ package edlab.eda.ace;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,16 +28,13 @@ public abstract class AnalogCircuitEnvironment {
 
   protected SpectreSession session;
   protected JSONObject jsonObject;
-  protected Set<String> blacklistAnalyses;
-
   protected Map<String, Parameter> parameters;
 
   protected Map<String, Double> parameterValues;
   protected Map<String, Double> performanceValues;
 
   protected AnalogCircuitEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, String netlist, File[] includeDirs,
-      Set<String> blacklistAnalyses) {
+      JSONObject jsonObject, String netlist, File[] includeDirs) {
 
     this.jsonObject = jsonObject;
 
@@ -57,8 +55,6 @@ public abstract class AnalogCircuitEnvironment {
     this.parameterValues = new HashMap<String, Double>();
     this.performanceValues = new HashMap<String, Double>();
     this.parameters = new HashMap<String, Parameter>();
-
-    this.blacklistAnalyses = blacklistAnalyses;
 
     JSONObject parametersJsonObject = this.jsonObject
         .getJSONObject(PARAMETERS_ID);
@@ -82,16 +78,20 @@ public abstract class AnalogCircuitEnvironment {
   /**
    * Trigger a circuit simulation
    * 
-   * @return
+   * @param set of analyses to be ignored
+   * 
+   * @return <code>this</code>
    */
-  public abstract AnalogCircuitEnvironment simulate();
+  public abstract AnalogCircuitEnvironment simulate(
+      Set<String> blacklistAnalyses);
 
   /**
-   * Stop the environment. When the method is not called, the environment is
-   * stopped automatically when a timeout 15min with no action is exceeded.
+   * Trigger a circuit simulation
+   * 
+   * @return <code>this</code>
    */
-  public void stop() {
-    this.session.stop();
+  public AnalogCircuitEnvironment simulate() {
+    return this.simulate(new HashSet<String>());
   }
 
   /**
@@ -228,6 +228,49 @@ public abstract class AnalogCircuitEnvironment {
       }
     }
 
+    return retval;
+  }
+
+  /**
+   * Get all performance identifiers
+   * 
+   * @return set of performance identifiers
+   */
+  public Set<String> getPerformanceIdentifiers() {
+    return this.getPerformanceIdentifiers(new HashSet<String>());
+  }
+
+  /**
+   * Get all performance identifiers
+   * 
+   * @param blacklistAnalyses Analyses to be ignored during simulation
+   * @return set of performance identifiers
+   */
+  public Set<String> getPerformanceIdentifiers(Set<String> blacklistAnalyses) {
+
+    Set<String> retval = new HashSet<String>();
+
+    Iterator<String> analysesIterator = this.jsonObject
+        .getJSONObject(PERFORMANCES_ID).keys();
+
+    Iterator<String> performanceIterator;
+
+    String analysis;
+
+    while (analysesIterator.hasNext()) {
+
+      analysis = analysesIterator.next();
+
+      if (!blacklistAnalyses.contains(analysis)) {
+
+        performanceIterator = this.jsonObject.getJSONObject(PERFORMANCES_ID)
+            .getJSONObject(analysis).keys();
+
+        while (performanceIterator.hasNext()) {
+          retval.add(performanceIterator.next());
+        }
+      }
+    }
     return retval;
   }
 }
