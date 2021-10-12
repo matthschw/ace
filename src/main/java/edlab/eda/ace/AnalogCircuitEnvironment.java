@@ -95,6 +95,14 @@ public abstract class AnalogCircuitEnvironment {
   }
 
   /**
+   * Stop the environment. When the method is not called, the environment is
+   * stopped automatically when a timeout 15min with no action is exceeded.
+   */
+  public void stop() {
+    this.session.stop();
+  }
+
+  /**
    * Get a map of all parameters in the design. The key of the map corresponds
    * to the name of the parameter and the value is the corresponding parameter
    * handle of class {@link Parameter}.
