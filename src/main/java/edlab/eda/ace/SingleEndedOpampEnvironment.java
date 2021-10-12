@@ -187,11 +187,18 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         key = iterator.next();
         performance = performances.getJSONObject(key);
 
-        reference = performance.getString(REFERENCE_ID);
+        if (performance.has(REFERENCE_ID)) {
 
-        this.performanceValues.put(key,
-            dcopResults.getRealValue(reference).getValue());
+          reference = performance.getString(REFERENCE_ID);
+
+          this.performanceValues.put(key,
+              dcopResults.getRealValue(reference).getValue());
+        }
+
       }
+
+      this.performanceValues.put("A",
+          this.session.getNumericValueAttribute("A").doubleValue());
     } else {
 
       while (iterator.hasNext()) {
@@ -201,6 +208,8 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
         this.performanceValues.remove(key);
       }
+
+      this.performanceValues.remove("A");
     }
 
     // Extract the result from "dcmatch" analysis
