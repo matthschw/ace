@@ -26,15 +26,45 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
   protected double dev = 1e-4;
 
+  /**
+   * analysis identifier in the netlist of the DC operating-point analysis
+   */
   public static final String DCOP_ANALYSIS_ID = "dcop";
+  /**
+   * analysis identifier in the netlist of the dcmatch analysis
+   */
   public static final String DCMATCH_ANALYSIS_ID = "dcmatch";
+  /**
+   * analysis identifier in the netlist of the stability analysis
+   */
   public static final String STB_ANALYSIS_ID = "stb";
+  /**
+   * analysis identifier in the netlist of the transient analysis
+   */
   public static final String TRAN_ANALYSIS_ID = "tran";
+  /**
+   * analysis identifier in the netlist of the noise analysis
+   */
   public static final String NOISE_ANALYSIS_ID = "noise";
+  /**
+   * analysis identifier in the netlist of the dc1 analysis
+   */
   public static final String DC1_ANALYSIS_ID = "dc1";
+  /**
+   * analysis identifier in the netlist of the transfer-function analysis
+   */
   public static final String XF_ANALYSIS_ID = "xf";
+  /**
+   * analysis identifier in the netlist of the ac analysis
+   */
   public static final String AC_ANALYSIS_ID = "ac";
+  /**
+   * analysis identifier in the netlist of the dc3 analysis
+   */
   public static final String DC3_ANALYSIS_ID = "dc3";
+  /**
+   * analysis identifier in the netlist of the dc4 analysis
+   */
   public static final String DC4_ANALYSIS_ID = "dc4";
 
   private SingleEndedOpampEnvironment(SpectreFactory factory,

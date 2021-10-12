@@ -68,6 +68,7 @@ class AnalogCircuitEnvironmentTest {
                     resourcesFile.getAbsoluteFile().toString(),
                     subDirectoryFile.getAbsoluteFile().toString(),
                     new String[] { jsonObj.getString("models") });
+                
                 break;
 
               default:
