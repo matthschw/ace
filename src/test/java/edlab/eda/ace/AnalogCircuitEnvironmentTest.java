@@ -88,11 +88,12 @@ class AnalogCircuitEnvironmentTest {
                     env.set(env.getRandomSizingParameters());
                     env.simulate();
                   }
-                  
+
                   // stop the environment
                   env.stop();
 
                 } catch (Exception e) {
+                  System.err.println(e);
                   fail(e.getMessage());
                 }
 

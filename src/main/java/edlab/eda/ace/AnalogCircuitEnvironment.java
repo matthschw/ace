@@ -208,4 +208,26 @@ public abstract class AnalogCircuitEnvironment {
 
     return retval;
   }
+
+  /**
+   * Get a map of the initial sizing parameters in the design. The key of the
+   * map corresponds to the name of the parameter and a random value.
+   * 
+   * @return map of parameters
+   * @see Parameter#isSizingParameter()
+   */
+  public Map<String, Double> getInitialSizingParameters() {
+
+    Map<String, Double> retval = new HashMap<String, Double>();
+
+    for (Entry<String, Parameter> entry : this.parameters.entrySet()) {
+
+      if (entry.getValue().isSizingParameter()) {
+
+        retval.put(entry.getKey(), entry.getValue().getInit());
+      }
+    }
+
+    return retval;
+  }
 }
