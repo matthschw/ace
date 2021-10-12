@@ -240,6 +240,24 @@ public abstract class AnalogCircuitEnvironment {
   }
 
   /**
+   * Get all analyses in the environment
+   * 
+   * @return set of analyses
+   */
+  public Set<String> getAnalyses() {
+    Set<String> retval = new HashSet<String>();
+
+    Iterator<String> analysesIterator = this.jsonObject
+        .getJSONObject(PERFORMANCES_ID).keys();
+
+    while (analysesIterator.hasNext()) {
+      retval.add(analysesIterator.next());
+    }
+
+    return retval;
+  }
+
+  /**
    * Get all performance identifiers
    * 
    * @return set of performance identifiers
@@ -251,7 +269,7 @@ public abstract class AnalogCircuitEnvironment {
   /**
    * Get all performance identifiers
    * 
-   * @param blacklistAnalyses Analyses to be ignored during simulation
+   * @param blacklistAnalyses analyses to be ignored during simulation
    * @return set of performance identifiers
    */
   public Set<String> getPerformanceIdentifiers(Set<String> blacklistAnalyses) {
