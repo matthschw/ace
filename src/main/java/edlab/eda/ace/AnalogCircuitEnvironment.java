@@ -78,7 +78,7 @@ public abstract class AnalogCircuitEnvironment {
   /**
    * Trigger a circuit simulation
    * 
-   * @param set of analyses to be ignored
+   * @param blacklistAnalyses set of analyses to be ignored
    * 
    * @return <code>this</code>
    */
