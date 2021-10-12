@@ -305,6 +305,9 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
       this.performanceValues.remove("sr_r");
       this.performanceValues.remove("sr_f");
+      this.performanceValues.remove("overshoot_r");
+      this.performanceValues.remove("overshoot_f");
+
     }
 
     // Extract the result from "noise" analysis
@@ -445,7 +448,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
           outshorth.getRealValue("DUT:O").getValue());
 
     } else {
-      this.performanceValues.remove("i_out_min");
+      this.performanceValues.remove("i_out_max");
     }
 
     return this;
