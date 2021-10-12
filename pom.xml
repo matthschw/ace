@@ -119,11 +119,6 @@
 		</dependency>
 		<dependency>
 			<groupId>edlab.eda</groupId>
-			<artifactId>cadence.rc.virtuoso</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>edlab.eda</groupId>
 			<artifactId>cadence.rc.spectre</artifactId>
 			<version>0.0.1</version>
 		</dependency>
