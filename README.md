@@ -35,6 +35,13 @@ $ mvn install
   The environment `SingleEndedOpampEnvironment` is utilized to extract
   common performances of a single-ended operational amplifier.
 
+
+## Circuits
+
+| Circuit                                                            | Description                                 | Environment                       |
+| :----------------------------------------------------------------- | :-----------------------------------------: | --------------------------------: |
+|  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png) | symmetrical opamp with N differential pair  | `SingleEndedOpampEnvironment`     |
+
 ## Backends
 
 Backends are provided in the following technologies (PDKs).
@@ -42,20 +49,11 @@ They are added as submodule in `./resources`.
 Some of the here referenced backends are proprietary.
 
 - [generic-5V](https://github.com/matthschw/ace-generic-5V)
-  - [ ] op1
   - [x] op2
-  - [ ] op3
-  - [ ] op4
 - [generic-1V](https://github.com/matthschw/ace-generic-1V)
-  - [ ] op1
   - [ ] op2
-  - [ ] op3
-  - [ ] op4
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
-  - [ ] op1
   - [x] op2
-  - [ ] op3
-  - [ ] op4
 
 ## License
 
