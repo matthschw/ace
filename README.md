@@ -27,6 +27,7 @@ $ mvn install
 
 - [Cadence® Spectre®](https://www.cadence.com/ko_KR/home/tools/custom-ic-analog-rf-design/circuit-simulation/spectre-simulation-platform.html) 19.1 or newer
 - [OpenJDK](https://openjdk.java.net/) 1.8 or newer 
+- [Apache Maven](https://maven.apache.org/) 3.6 or newer
 
 ## Environments
 
@@ -39,7 +40,7 @@ $ mvn install
 ## Circuits
 
 | Circuit                                                            | Description                                 | Environment                       |
-| :----------------------------------------------------------------- | :-----------------------------------------: | :-------------------------------: |
+| :----------------------------------------------------------------: | :-----------------------------------------: | :-------------------------------: |
 |  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png) | symmetrical opamp with N differential pair  | `SingleEndedOpampEnvironment`     |
 
 ## Backends
