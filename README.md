@@ -41,6 +41,7 @@ $ mvn install
 
 | Circuit                                                            | Description                                 | Environment                       |
 | :----------------------------------------------------------------: | :-----------------------------------------: | :-------------------------------: |
+|  [op1](https://github.com/matthschw/ace/tree/main/figures/op1.png) | miller opamp with N differential pair       | `SingleEndedOpampEnvironment`     |
 |  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png) | symmetrical opamp with N differential pair  | `SingleEndedOpampEnvironment`     |
 
 ## Backends
