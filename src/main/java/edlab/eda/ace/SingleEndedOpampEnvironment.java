@@ -25,6 +25,7 @@ import edlab.eda.reader.nutmeg.NutmegComplexPlot;
 public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
   protected double dev = 1e-4;
+  protected double settling_percentage = 5;
 
   /**
    * analysis identifier in the netlist of the DC operating-point analysis
@@ -335,20 +336,35 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("sr_r",
           (upper - lower) / (point2.getValue() - point1.getValue()));
 
+      if (this.performanceValues.get("sr_r") == Double.NaN) {
+        this.performanceValues.put("sr_r", Double.MIN_VALUE);
+      }
+
       point1 = falling.cross(upper, 1);
       point2 = falling.cross(lower, 1);
 
       this.performanceValues.put("sr_f",
           (lower - upper) / (point2.getValue() - point1.getValue()));
 
+      if (this.performanceValues.get("sr_f") == Double.NaN) {
+        this.performanceValues.put("sr_f", Double.MAX_VALUE);
+      }
+
       this.performanceValues.put("overshoot_r", 100
           * (rising.ymax().getValue() - out.getValue(50e-6).getValue())
           / (out.getValue(50e-6).getValue() - out.getValue(100e-9).getValue()));
+      
+      if (this.performanceValues.get("overshoot_r") == Double.NaN) {
+        this.performanceValues.put("overshoot_r", Double.MAX_VALUE);
+      }
 
-      this.performanceValues.put("overshoot_f",
-          100*(falling.ymin().getValue() - out.getValue(90e-6).getValue())
-              / (out.getValue(90e-6).getValue()
-                  - out.getValue(50e-6).getValue()));
+      this.performanceValues.put("overshoot_f", 100
+          * (falling.ymin().getValue() - out.getValue(90e-6).getValue())
+          / (out.getValue(90e-6).getValue() - out.getValue(50e-6).getValue()));
+      
+      if (this.performanceValues.get("overshoot_f") == Double.NaN) {
+        this.performanceValues.put("overshoot_f", Double.MAX_VALUE);
+      }
 
     } else {
 
