@@ -67,8 +67,9 @@ class AnalogCircuitEnvironmentTest {
                 env = SingleEndedOpampEnvironment.get(
                     resourcesFile.getAbsoluteFile().toString(),
                     subDirectoryFile.getAbsoluteFile().toString(),
-                    new String[] { jsonObj.getString("models") });
-                
+                    new String[] { new File(subDirectoryFile, "./../pdk")
+                        .getAbsoluteFile().toString() });
+
                 break;
 
               default:
@@ -81,31 +82,34 @@ class AnalogCircuitEnvironmentTest {
 
                 try {
 
-                  // simulate the circuit once
-                  env.simulate();
-
                   for (int i = 0; i < NUM_OF_TESTS; i++) {
-                    env.set(env.getRandomSizingParameters());
+
+                    if (i > 0) {
+                      env.set(env.getRandomSizingParameters());
+                    }
+                    
                     env.simulate();
+
+                    // check if result for all identifiers is available
+                    for (String id : env.getPerformanceIdentifiers()) {
+                      if (env.getPerformanceValues().get(id) == null) {
+                        fail("Performance \"" + id + "\" missing");
+                      }
+                    }
                   }
 
                 } catch (Exception e) {
-                  System.err.println(e);
-                  fail(e.getMessage());
+                  fail("Unable to simulate");
                 }
-
               } else {
-
                 fail("Cannot create environment for \""
                     + subDirectoryFile.getAbsolutePath() + "\"");
               }
-
             } catch (Exception e) {
               e.printStackTrace();
               fail("Unable to read JSON \"" + jsonFile.getAbsolutePath()
                   + "\"\n\t" + e.getMessage());
             }
-
           }
         }
       }
