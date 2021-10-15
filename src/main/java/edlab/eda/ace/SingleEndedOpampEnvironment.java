@@ -224,11 +224,11 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
           this.performanceValues.put(key,
               dcopResults.getRealValue(reference).getValue());
         }
-
       }
 
       this.performanceValues.put("A",
           this.session.getNumericValueAttribute("A").doubleValue());
+
     } else {
 
       while (iterator.hasNext()) {
@@ -275,14 +275,20 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     // Extract the result from "stb" analysis
     if (!blacklistAnalyses.contains(STB_ANALYSIS_ID)) {
 
-      ComplexResultsDatabase stb = ComplexResultsDatabase.buildResultDatabase(
-          (NutmegComplexPlot) plots.get(resultIdentifier++));
+      NutmegComplexPlot plot = (NutmegComplexPlot) plots
+          .get(resultIdentifier++);
+
+      ComplexResultsDatabase stb = ComplexResultsDatabase
+          .buildResultDatabase(plot);
 
       ComplexWaveform loopGain = stb.getComplexWaveform("loopGain");
+
+      // System.err.println(loopGain);
 
       // waves.put("loopGain", loopGain);
 
       RealWaveform loopGainAbs = loopGain.abs().db20();
+
       RealWaveform loopGainPhase = loopGain.phaseDeg();
 
       // waves.put("loopGainAbs", loopGainAbs);
@@ -290,6 +296,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
       RealValue a0 = loopGainAbs.getValue(loopGainAbs.xmin());
       RealValue ugbw = loopGainAbs.cross(0, 1);
+
       RealValue pm = loopGainPhase.getValue(ugbw.getValue());
       RealValue x = loopGainPhase.cross(0, 1);
       RealValue gm = loopGainAbs.getValue(x.getValue());
@@ -334,11 +341,14 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("sr_f",
           (lower - upper) / (point2.getValue() - point1.getValue()));
 
-      this.performanceValues.put("overshoot_r",
-          rising.ymax().getValue() / this.getParameterValues().get("vs") * 2
-              - 1);
-      this.performanceValues.put("overshoot_f", 1 - falling.ymin().getValue()
-          / this.getParameterValues().get("vs") * 2);
+      this.performanceValues.put("overshoot_r", 100
+          * (rising.ymax().getValue() - out.getValue(50e-6).getValue())
+          / (out.getValue(50e-6).getValue() - out.getValue(100e-9).getValue()));
+
+      this.performanceValues.put("overshoot_f",
+          100*(falling.ymin().getValue() - out.getValue(90e-6).getValue())
+              / (out.getValue(90e-6).getValue()
+                  - out.getValue(50e-6).getValue()));
 
     } else {
 
