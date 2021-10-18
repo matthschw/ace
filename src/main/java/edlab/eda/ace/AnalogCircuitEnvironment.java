@@ -299,4 +299,48 @@ public abstract class AnalogCircuitEnvironment {
     }
     return retval;
   }
+
+  @Override
+  public String toString() {
+
+    int keyLen = 0;
+
+    for (String key : this.getParameters().keySet()) {
+      keyLen = Math.max(keyLen, key.length());
+    }
+
+    for (String key : this.getPerformanceIdentifiers()) {
+      keyLen = Math.max(keyLen, key.length());
+    }
+
+    StringBuilder builder = new StringBuilder();
+
+    builder.append("Parameters:");
+
+    for (Entry<String, Double> entry : this.getParameterValues().entrySet()) {
+
+      builder.append("\n\t" + entry.getKey());
+
+      for (int i = 0; i < keyLen - entry.getKey().length(); i++) {
+        builder.append(" ");
+      }
+
+      builder.append(" : " + entry.getValue());
+    }
+
+    builder.append("\n\nPerformances:");
+
+    for (Entry<String, Double> entry : this.getPerformanceValues().entrySet()) {
+
+      builder.append("\n\t" + entry.getKey());
+
+      for (int i = 0; i < keyLen - entry.getKey().length(); i++) {
+        builder.append(" ");
+      }
+
+      builder.append(" : " + entry.getValue());
+    }
+
+    return builder.toString();
+  }
 }
