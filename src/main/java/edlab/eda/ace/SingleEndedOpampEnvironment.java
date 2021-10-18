@@ -353,7 +353,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("overshoot_r", 100
           * (rising.ymax().getValue() - out.getValue(50e-6).getValue())
           / (out.getValue(50e-6).getValue() - out.getValue(100e-9).getValue()));
-      
+
       if (this.performanceValues.get("overshoot_r") == Double.NaN) {
         this.performanceValues.put("overshoot_r", Double.MAX_VALUE);
       }
@@ -361,7 +361,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("overshoot_f", 100
           * (falling.ymin().getValue() - out.getValue(90e-6).getValue())
           / (out.getValue(90e-6).getValue() - out.getValue(50e-6).getValue()));
-      
+
       if (this.performanceValues.get("overshoot_f") == Double.NaN) {
         this.performanceValues.put("overshoot_f", Double.MAX_VALUE);
       }
