@@ -87,7 +87,7 @@ class AnalogCircuitEnvironmentTest {
                     if (i > 0) {
                       env.set(env.getRandomSizingParameters());
                     }
-                    
+
                     env.simulate();
 
                     // check if result for all identifiers is available
@@ -96,6 +96,12 @@ class AnalogCircuitEnvironmentTest {
                         fail("Performance \"" + id + "\" missing");
                       }
                     }
+                  }
+
+                  String file = env.saveStatus(true);
+
+                  if (!env.setStatus(file)) {
+                    fail("Unable to set status");
                   }
 
                 } catch (Exception e) {

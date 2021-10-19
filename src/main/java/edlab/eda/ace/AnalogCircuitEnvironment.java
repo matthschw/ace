@@ -2,6 +2,10 @@ package edlab.eda.ace;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -71,7 +75,6 @@ public abstract class AnalogCircuitEnvironment {
 
       this.parameters.put(parameter.getName(), parameter);
       this.set(name, parameter.getInit());
-
     }
   }
 
@@ -264,6 +267,112 @@ public abstract class AnalogCircuitEnvironment {
    */
   public Set<String> getPerformanceIdentifiers() {
     return this.getPerformanceIdentifiers(new HashSet<String>());
+  }
+
+  /**
+   * Get the status of the environment (all parameters) as a JSON object
+   * 
+   * @return JSON object
+   */
+  public JSONObject getStatus() {
+
+    JSONObject jsonObj = new JSONObject();
+
+    for (Entry<String, Double> entry : this.getParameterValues().entrySet()) {
+      jsonObj.put(entry.getKey(), entry.getValue());
+    }
+
+    return jsonObj;
+  }
+
+  /**
+   * Set the status of the environment based on a JSON object
+   * 
+   * @param jsonObj JSON object
+   * 
+   * @return <code>true</code> when the status of the environment was set
+   *         correctly, <code>false</code> otherwise
+   */
+  public boolean setStatus(JSONObject jsonObj) {
+
+    for (String key : this.parameters.keySet()) {
+
+      if (jsonObj.getDouble(key) != Double.NaN) {
+
+        this.set(key, jsonObj.getDouble(key));
+        
+      } else {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Set the status of the environment based on a JSON file
+   * 
+   * @param file Path to JSON
+   * 
+   * @return <code>true</code> when the status of the environment was set
+   *         correctly, <code>false</code> otherwise
+   */
+  public boolean setStatus(String file) {
+
+    File jsonFile = new File(file);
+
+    if (!(jsonFile.exists() && jsonFile.canRead())) {
+
+      System.err.println("Cannot read file \"" + jsonFile.toString() + "\"");
+
+      return false;
+    }
+
+    JSONObject jsonObj;
+
+    try {
+
+      jsonObj = new JSONObject(
+          new String(Files.readAllBytes(jsonFile.toPath())));
+    } catch (Exception e) {
+      System.err.println("Cannot read JSON \"" + jsonFile.toString() + "\"\n"
+          + e.getMessage());
+      return false;
+    }
+
+    return this.setStatus(jsonObj);
+  }
+
+  /**
+   * This function will save the current status (parameters) of the environment
+   * as a JSON. The method returns the path to the file.
+   * 
+   * @param deleteOnExit Provide <code>true</code> when the file should be
+   *                     deleted automatically, when the JVM terminates,
+   *                     <code>false</code> otherwise
+   * 
+   * @return path to JSON file
+   */
+  public String saveStatus(boolean deleteOnExit) {
+
+    try {
+
+      File file = File.createTempFile("status", ".json");
+
+      FileWriter writer = new FileWriter(file);
+      writer.write(this.getStatus().toString());
+      writer.close();
+
+      if (deleteOnExit) {
+        file.deleteOnExit();
+      }
+
+      return file.getAbsolutePath();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   /**
