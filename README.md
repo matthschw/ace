@@ -43,6 +43,8 @@ $ mvn install
 |  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png) | symmetrical opamp with N differential pair               | `SingleEndedOpampEnvironment`     |
 |  [op3](https://github.com/matthschw/ace/tree/main/figures/op3.png) | (un) symmetrical opamp with N differential pair          | `SingleEndedOpampEnvironment`     |
 |  [op4](https://github.com/matthschw/ace/tree/main/figures/op4.png) | symmetrical opamp with N differential pair and cascodes  | `SingleEndedOpampEnvironment`     |
+|  op5                                                               | N/A                                                      | N/A                                  |
+|  [op6](https://github.com/matthschw/ace/tree/main/figures/op6.png) | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
 
 ## Backends
 
@@ -55,16 +57,21 @@ Some of the here referenced backends are proprietary.
   - [x] op2
   - [ ] op3
   - [ ] op4
+  - [ ] op6
+
 - [generic-1V](https://github.com/matthschw/ace-generic-1V)
   - [ ] op1
   - [ ] op2
   - [ ] op3
   - [ ] op4
+  - [ ] op6
+
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
   - [x] op1
   - [x] op2
   - [x] op3
   - [x] op4
+  - [x] op6
 
 ## ToDo
 
