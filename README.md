@@ -59,13 +59,6 @@ Some of the here referenced backends are proprietary.
   - [ ] op4
   - [ ] op6
 
-- [generic-1V](https://github.com/matthschw/ace-generic-1V)
-  - [ ] op1
-  - [ ] op2
-  - [ ] op3
-  - [ ] op4
-  - [ ] op6
-
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
   - [x] op1
   - [x] op2
