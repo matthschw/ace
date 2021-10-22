@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,6 +35,7 @@ public abstract class AnalogCircuitEnvironment {
 
   protected Map<String, Double> parameterValues;
   protected Map<String, Double> performanceValues;
+  protected Map<String, String> errorMessage;
 
   protected AnalogCircuitEnvironment(SpectreFactory factory,
       JSONObject jsonObject, String netlist, File[] includeDirs) {
@@ -59,6 +59,8 @@ public abstract class AnalogCircuitEnvironment {
     this.parameterValues = new HashMap<String, Double>();
     this.performanceValues = new HashMap<String, Double>();
     this.parameters = new HashMap<String, Parameter>();
+
+    this.errorMessage = new HashMap<String, String>();
 
     JSONObject parametersJsonObject = this.jsonObject
         .getJSONObject(PARAMETERS_ID);
@@ -300,7 +302,7 @@ public abstract class AnalogCircuitEnvironment {
       if (jsonObj.getDouble(key) != Double.NaN) {
 
         this.set(key, jsonObj.getDouble(key));
-        
+
       } else {
         return false;
       }
@@ -451,5 +453,10 @@ public abstract class AnalogCircuitEnvironment {
     }
 
     return builder.toString();
+  }
+
+  @Override
+  protected void finalize() {
+    this.session.stop();
   }
 }
