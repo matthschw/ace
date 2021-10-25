@@ -199,5 +199,4 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
 
     return this;
   }
-
 }

@@ -7,3 +7,6 @@
 [submodule "resource/generic-1V"]
 	path = resource/generic-1V
 	url = git@github.com:matthschw/ace-generic-1V.git
+[submodule "resource/sky130-1V8"]
+	path = resource/sky130-1V8
+	url = git@github.com:matthschw/ace-sky130-1V8.git
