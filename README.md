@@ -58,13 +58,13 @@ Backends are provided in the following technologies (PDKs).
 They are added as submodule in `./resources`.
 Some of the here referenced backends are proprietary.
 
-- [generic-5V](https://github.com/matthschw/ace-generic-5V)
+- [sky130-1V8](https://github.com/matthschw/ace-sky130-1V8)
   - [ ] op1
-  - [x] op2
+  - [ ] op2
   - [ ] op3
   - [ ] op4
   - [ ] op6
-  - [ ] nand4
+  - [x] nand4
 
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
   - [x] op1
