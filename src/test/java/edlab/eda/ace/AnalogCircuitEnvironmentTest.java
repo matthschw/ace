@@ -72,6 +72,16 @@ class AnalogCircuitEnvironmentTest {
 
                 break;
 
+              case "Nand4Environment":
+
+                env = Nand4Environment.get(
+                    resourcesFile.getAbsoluteFile().toString(),
+                    subDirectoryFile.getAbsoluteFile().toString(),
+                    new String[] { new File(subDirectoryFile, "./../pdk")
+                        .getAbsoluteFile().toString() });
+
+                break;
+
               default:
                 fail("No environment \"" + jsonObj.getString("environment")
                     + "\" is available\n");
@@ -105,6 +115,7 @@ class AnalogCircuitEnvironmentTest {
                   }
 
                 } catch (Exception e) {
+        
                   fail("Unable to simulate");
                 }
               } else {

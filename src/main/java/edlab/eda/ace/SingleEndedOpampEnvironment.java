@@ -3,6 +3,7 @@ package edlab.eda.ace;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ import edlab.eda.ardb.ComplexWaveform;
 import edlab.eda.ardb.RealResultsDatabase;
 import edlab.eda.ardb.RealValue;
 import edlab.eda.ardb.RealWaveform;
+import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
@@ -70,7 +72,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
   private SingleEndedOpampEnvironment(SpectreFactory factory,
       JSONObject jsonObject, String netlist, File[] includeDirs) {
-
     super(factory, jsonObject, netlist, includeDirs);
   }
 
@@ -107,7 +108,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    factory.setTimeout(15, TimeUnit.MINUTES);
+    factory.setTimeout(10, TimeUnit.SECONDS);
 
     File circuitDirFile = new File(circuitDir);
 
@@ -186,12 +187,19 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
   @Override
   public SingleEndedOpampEnvironment simulate(Set<String> blacklistAnalyses) {
 
+    this.performanceValues = new HashMap<String, Double>();
+
     List<NutmegPlot> plots;
 
-    if (blacklistAnalyses == null || blacklistAnalyses.isEmpty()) {
-      plots = this.session.simulate();
-    } else {
-      plots = this.session.simulate(blacklistAnalyses);
+    try {
+      if (blacklistAnalyses == null || blacklistAnalyses.isEmpty()) {
+        plots = this.session.simulate();
+      } else {
+        plots = this.session.simulate(blacklistAnalyses);
+      }
+    } catch (UnableToStartSession e) {
+      e.printStackTrace();
+      return null;
     }
 
     int resultIdentifier = 0;
@@ -227,20 +235,14 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         }
       }
 
-      this.performanceValues.put("A",
-          this.session.getNumericValueAttribute("A").doubleValue());
-
-    } else {
-
-      while (iterator.hasNext()) {
-
-        key = iterator.next();
-        performance = performances.getJSONObject(key);
-
-        this.performanceValues.remove(key);
+      try {
+        this.performanceValues.put("A",
+            this.session.getNumericValueAttribute("A").doubleValue());
+      } catch (UnableToStartSession e) {
+        e.printStackTrace();
+        return null;
       }
 
-      this.performanceValues.remove("A");
     }
 
     // Extract the result from "dcmatch" analysis
@@ -261,15 +263,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         reference = performance.getString(REFERENCE_ID);
         this.performanceValues.put(key,
             dcmatchResults.getRealValue(reference).getValue());
-      }
-    } else {
-
-      while (iterator.hasNext()) {
-
-        key = iterator.next();
-        performance = performances.getJSONObject(key);
-
-        this.performanceValues.remove(key);
       }
     }
 
@@ -299,7 +292,9 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       RealValue ugbw = loopGainAbs.cross(0, 1);
 
       RealValue pm = loopGainPhase.getValue(ugbw.getValue());
+
       RealValue x = loopGainPhase.cross(0, 1);
+
       RealValue gm = loopGainAbs.getValue(x.getValue());
 
       this.performanceValues.put("a_0", a0.getValue());
@@ -307,11 +302,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("pm", pm.getValue());
       this.performanceValues.put("gm", gm.getValue());
 
-    } else {
-      this.performanceValues.remove("a_0");
-      this.performanceValues.remove("ugbw");
-      this.performanceValues.remove("pm");
-      this.performanceValues.remove("gm");
     }
 
     // Extract the result from "tran" analysis
@@ -366,13 +356,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         this.performanceValues.put("overshoot_f", Double.MAX_VALUE);
       }
 
-    } else {
-
-      this.performanceValues.remove("sr_r");
-      this.performanceValues.remove("sr_f");
-      this.performanceValues.remove("overshoot_r");
-      this.performanceValues.remove("overshoot_f");
-
     }
 
     // Extract the result from "noise" analysis
@@ -390,14 +373,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("vn_10kHz", out.getValue(1e4).getValue());
       this.performanceValues.put("vn_100kHz", out.getValue(1e5).getValue());
 
-    } else {
-
-      this.performanceValues.remove("vn_1Hz");
-      this.performanceValues.remove("vn_10Hz");
-      this.performanceValues.remove("vn_100Hz");
-      this.performanceValues.remove("vn_1kHz");
-      this.performanceValues.remove("vn_10kHz");
-      this.performanceValues.remove("vn_100kHz");
     }
 
     // Extract the result from "dc1" analysis
@@ -459,10 +434,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
           psrr_n.getValue(psrr_n.xmin()).getValue());
       this.performanceValues.put("cmrr", cmrr.getValue(cmrr.xmin()).getValue());
 
-    } else {
-      this.performanceValues.remove("psrr_p");
-      this.performanceValues.remove("psrr_n");
-      this.performanceValues.remove("cmrr");
     }
 
     // Extract the result from "ac" analysis
@@ -485,9 +456,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
           vil.getValue() + this.getParameterValues().get("vsup") / 2);
       this.performanceValues.put("v_ih",
           vih.getValue() + this.getParameterValues().get("vsup") / 2);
-    } else {
-      this.performanceValues.remove("v_il");
-      this.performanceValues.remove("v_ih");
     }
 
     // Extract the result from "dc3" analysis
@@ -499,8 +467,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("i_out_min",
           outshortl.getRealValue("DUT:O").getValue());
 
-    } else {
-      this.performanceValues.remove("i_out_min");
     }
 
     // Extract the result from "dc4" analysis
@@ -512,8 +478,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       this.performanceValues.put("i_out_max",
           outshorth.getRealValue("DUT:O").getValue());
 
-    } else {
-      this.performanceValues.remove("i_out_max");
     }
 
     return this;

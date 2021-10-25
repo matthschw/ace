@@ -35,16 +35,22 @@ $ mvn install
   The environment `SingleEndedOpampEnvironment` is utilized to extract
   common performances of a single-ended operational amplifier.
 
+- *Nand-Gate with 4 inputs*
+
+  The environment `Nand4Environment` is utilized to extract
+  the switching thresholds of a NAND gate with 4 inputs.
+
 ## Circuits
 
-| Circuit                                                            | Description                                              | Environment                       |
-| :----------------------------------------------------------------: | :------------------------------------------------------: | :-------------------------------: |
-|  [op1](https://github.com/matthschw/ace/tree/main/figures/op1.png) | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
-|  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png) | symmetrical opamp with N differential pair               | `SingleEndedOpampEnvironment`     |
-|  [op3](https://github.com/matthschw/ace/tree/main/figures/op3.png) | (un) symmetrical opamp with N differential pair          | `SingleEndedOpampEnvironment`     |
-|  [op4](https://github.com/matthschw/ace/tree/main/figures/op4.png) | symmetrical opamp with N differential pair and cascodes  | `SingleEndedOpampEnvironment`     |
-|  op5                                                               | N/A                                                      | N/A                                  |
-|  [op6](https://github.com/matthschw/ace/tree/main/figures/op6.png) | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
+| Circuit                                                                | Description                                              | Environment                       |
+| :--------------------------------------------------------------------: | :------------------------------------------------------: | :-------------------------------: |
+|  [op1](https://github.com/matthschw/ace/tree/main/figures/op1.png)     | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
+|  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png)     | symmetrical opamp with N differential pair               | `SingleEndedOpampEnvironment`     |
+|  [op3](https://github.com/matthschw/ace/tree/main/figures/op3.png)     | (un) symmetrical opamp with N differential pair          | `SingleEndedOpampEnvironment`     |
+|  [op4](https://github.com/matthschw/ace/tree/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes  | `SingleEndedOpampEnvironment`     |
+|  op5                                                                   | N/A                                                      | N/A                               |
+|  [op6](https://github.com/matthschw/ace/tree/main/figures/op6.png)     | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
+|  [nand4](https://github.com/matthschw/ace/tree/main/figures/nand4.png) | NAND with 4 inputs                                       | `Nand4Environment`                |
 
 ## Backends
 
@@ -58,6 +64,7 @@ Some of the here referenced backends are proprietary.
   - [ ] op3
   - [ ] op4
   - [ ] op6
+  - [ ] nand4
 
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
   - [x] op1
@@ -65,6 +72,7 @@ Some of the here referenced backends are proprietary.
   - [x] op3
   - [x] op4
   - [x] op6
+  - [x] nand4
 
 ## ToDo
 

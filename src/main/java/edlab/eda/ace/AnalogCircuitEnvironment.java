@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.cadence.rc.spectre.SpectreSession;
 
@@ -171,7 +172,12 @@ public abstract class AnalogCircuitEnvironment {
 
       this.parameterValues.put(name, value);
 
-      return this.session.setValueAttribute(name, value);
+      try {
+        return this.session.setValueAttribute(name, value);
+      } catch (UnableToStartSession e) {
+        e.printStackTrace();
+        return false;
+      }
 
     } else {
 
