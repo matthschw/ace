@@ -293,12 +293,13 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
 
       RealValue pm = loopGainPhase.getValue(ugbw.getValue());
 
-      RealValue x = loopGainPhase.cross(0, 1);
+      RealValue cof = loopGainPhase.cross(0, 1);
 
-      RealValue gm = loopGainAbs.getValue(x.getValue());
+      RealValue gm = loopGainAbs.getValue(cof.getValue());
 
       this.performanceValues.put("a_0", a0.getValue());
       this.performanceValues.put("ugbw", ugbw.getValue());
+      this.performanceValues.put("cof", cof.getValue());
       this.performanceValues.put("pm", pm.getValue());
       this.performanceValues.put("gm", gm.getValue());
 
