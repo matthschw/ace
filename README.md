@@ -42,15 +42,15 @@ $ mvn install
 
 ## Circuits
 
-| Circuit                                                                | Description                                              | Environment                       |
-| :--------------------------------------------------------------------: | :------------------------------------------------------: | :-------------------------------: |
-|  [op1](https://github.com/matthschw/ace/tree/main/figures/op1.png)     | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
-|  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png)     | symmetrical opamp with N differential pair               | `SingleEndedOpampEnvironment`     |
-|  [op3](https://github.com/matthschw/ace/tree/main/figures/op3.png)     | (un) symmetrical opamp with N differential pair          | `SingleEndedOpampEnvironment`     |
-|  [op4](https://github.com/matthschw/ace/tree/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes  | `SingleEndedOpampEnvironment`     |
-|  op5                                                                   | N/A                                                      | N/A                               |
-|  [op6](https://github.com/matthschw/ace/tree/main/figures/op6.png)     | miller opamp with N differential pair                    | `SingleEndedOpampEnvironment`     |
-|  [nand4](https://github.com/matthschw/ace/tree/main/figures/nand4.png) | NAND with 4 inputs                                       | `Nand4Environment`                |
+| Circuit                                                                | Description                                                 | Environment                       |
+| :--------------------------------------------------------------------: | :---------------------------------------------------------: | :-------------------------------: |
+|  [op1](https://github.com/matthschw/ace/tree/main/figures/op1.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
+|  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png)     | symmetrical opamp with N differential pair                  | `SingleEndedOpampEnvironment`     |
+|  [op3](https://github.com/matthschw/ace/tree/main/figures/op3.png)     | (un) symmetrical opamp with N differential pair             | `SingleEndedOpampEnvironment`     |
+|  [op4](https://github.com/matthschw/ace/tree/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes     | `SingleEndedOpampEnvironment`     |
+|  [op5](https://github.com/matthschw/ace/tree/main/figures/op5.png)     | (un) symmetrical opamp with N differential pair and cascode | `SingleEndedOpampEnvironment`     |
+|  [op6](https://github.com/matthschw/ace/tree/main/figures/op6.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
+|  [nand4](https://github.com/matthschw/ace/tree/main/figures/nand4.png) | NAND with 4 inputs                                          | `Nand4Environment`                |
 
 ## Backends
 
