@@ -77,7 +77,15 @@ Some of the here referenced backends are proprietary.
 ## ToDo
 
 - Provide MWE
-
+- Work on `SingleEndedOpampEnvironment`
+  - Differential input capacitance
+  - Single-Ended input capacitance 
+  - Output Resistance
+  - THD
+  - Settling time
+- Work on `DifferentialOpampEnvironment`  
+- Work on `ComparatorEnvironment`  
+- Work on `BandgapEnvironment`  
 ## License
 
 Copyright (C) 2021, [Electronics & Drives](https://www.electronics-and-drives.de/)
