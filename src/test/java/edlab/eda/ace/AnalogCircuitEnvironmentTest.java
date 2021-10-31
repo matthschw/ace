@@ -60,6 +60,9 @@ class AnalogCircuitEnvironmentTest {
 
               AnalogCircuitEnvironment env = null;
 
+              System.out.println("[INFO] Run test of "
+                  + subDirectoryFile.getAbsoluteFile().toString() + " ...");
+
               switch (jsonObj.getString("environment")) {
 
               case "SingleEndedOpampEnvironment":
@@ -115,8 +118,8 @@ class AnalogCircuitEnvironmentTest {
                   }
 
                 } catch (Exception e) {
-        
-                  fail("Unable to simulate");
+
+                  fail("Unable to simulate" + e.getMessage());
                 }
               } else {
                 fail("Cannot create environment for \""
