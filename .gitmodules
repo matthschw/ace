@@ -1,6 +1,3 @@
 [submodule "resource/xh035-3V3"]
 	path = resource/xh035-3V3
 	url = git@gitlab-forschung.reutlingen-university.de:eda/ace-xh035-3v3.git
-[submodule "resource/sky130-1V8"]
-	path = resource/sky130-1V8
-	url = git@github.com:matthschw/ace-sky130-1V8.git
