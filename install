@@ -1,0 +1,34 @@
+#!/bin/bash
+
+if ! command -v virtuoso -V &> /dev/null
+then
+  echo "Virtuoso could not be found"
+  exit
+fi
+
+if ! command -v spectre -V &> /dev/null
+then
+  echo "Spectre could not be found"
+  exit
+fi
+
+git clone --recursive https://github.com/matthschw/ace.git
+cd ace
+mkdir dependencies
+cd dependencies
+git clone https://github.com/electronics-and-drives/nutmeg-reader.git
+git clone https://github.com/electronics-and-drives/cadence-remote-control.git
+git clone https://github.com/electronics-and-drives/spectre-remote-control.git
+git clone https://github.com/electronics-and-drives/analog-results-database.git
+cd nutmeg-reader
+mvn install
+cd ../cadence-remote-control
+mvn install -Dmaven.test.skip=true
+mvn install
+cd ../spectre-remote-control
+mvn install -Dmaven.test.skip=true
+mvn install
+cd ../analog-results-database
+mvn install
+cd ../..
+mvn install
