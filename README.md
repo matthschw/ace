@@ -40,17 +40,23 @@ $ mvn install
   The environment `Nand4Environment` is utilized to extract
   the switching thresholds of a NAND gate with 4 inputs.
 
+- *schmitt trigger*
+
+  The environment `SchmittTriggerEnvironment` is utilized to extract
+  the thresholds and propagation delays of a schmitt trigger.
+
 ## Circuits
 
-| Circuit                                                                | Description                                                 | Environment                       |
-| :--------------------------------------------------------------------: | :---------------------------------------------------------: | :-------------------------------: |
-|  [op1](https://github.com/matthschw/ace/tree/main/figures/op1.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
-|  [op2](https://github.com/matthschw/ace/tree/main/figures/op2.png)     | symmetrical opamp with N differential pair                  | `SingleEndedOpampEnvironment`     |
-|  [op3](https://github.com/matthschw/ace/tree/main/figures/op3.png)     | (un) symmetrical opamp with N differential pair             | `SingleEndedOpampEnvironment`     |
-|  [op4](https://github.com/matthschw/ace/tree/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes     | `SingleEndedOpampEnvironment`     |
-|  [op5](https://github.com/matthschw/ace/tree/main/figures/op5.png)     | (un) symmetrical opamp with N differential pair and cascode | `SingleEndedOpampEnvironment`     |
-|  [op6](https://github.com/matthschw/ace/tree/main/figures/op6.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
-|  [nand4](https://github.com/matthschw/ace/tree/main/figures/nand4.png) | NAND with 4 inputs                                          | `Nand4Environment`                |
+| Circuit                                                                          | Description                                                 | Environment                       |
+| :------------------------------------------------------------------------------: | :---------------------------------------------------------: | :-------------------------------: |
+|  [op1](https://raw.githubusercontent.com/matthschw/ace/main/figures/op1.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
+|  [op2](https://raw.githubusercontent.com/matthschw/ace/main/figures/op2.png)     | symmetrical opamp with N differential pair                  | `SingleEndedOpampEnvironment`     |
+|  [op3](https://raw.githubusercontent.com/matthschw/ace/main/figures/op3.png)     | (un) symmetrical opamp with N differential pair             | `SingleEndedOpampEnvironment`     |
+|  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes     | `SingleEndedOpampEnvironment`     |
+|  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)     | (un) symmetrical opamp with N differential pair and cascode | `SingleEndedOpampEnvironment`     |
+|  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
+|  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png) | NAND with 4 inputs                                          | `Nand4Environment`                |
+|  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)     | schmitt trigger                                             | `SchmittTriggerEnvironment`       |
 
 ## Backends
 
@@ -63,9 +69,10 @@ Some of the here referenced backends are proprietary.
   - [ ] op2
   - [ ] op3
   - [ ] op4
+  - [ ] op5
   - [ ] op6
   - [x] nand4
-
+  - [ ] st1
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
   - [x] op1
   - [x] op2
@@ -73,7 +80,7 @@ Some of the here referenced backends are proprietary.
   - [x] op4
   - [x] op6
   - [x] nand4
-
+  - [x] st1
 ## ToDo
 
 - Provide MWE

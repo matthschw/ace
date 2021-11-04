@@ -62,7 +62,7 @@ class AnalogCircuitEnvironmentTest {
 
               System.out.println("[INFO] Run test of "
                   + subDirectoryFile.getAbsoluteFile().toString() + " ...");
-
+              
               switch (jsonObj.getString("environment")) {
 
               case "SingleEndedOpampEnvironment":
@@ -84,10 +84,19 @@ class AnalogCircuitEnvironmentTest {
                         .getAbsoluteFile().toString() });
 
                 break;
+              case "SchmittTriggerEnvironment":
+
+                env = SchmittTriggerEnvironment.get(
+                    resourcesFile.getAbsoluteFile().toString(),
+                    subDirectoryFile.getAbsoluteFile().toString(),
+                    new String[] { new File(subDirectoryFile, "./../pdk")
+                        .getAbsoluteFile().toString() });
+
+                break;
 
               default:
-                fail("No environment \"" + jsonObj.getString("environment")
-                    + "\" is available\n");
+                System.err.println("[INFO] No environment \""
+                    + jsonObj.getString("environment") + "\" is available");
                 break;
               }
 
@@ -121,9 +130,6 @@ class AnalogCircuitEnvironmentTest {
 
                   fail("Unable to simulate" + e.getMessage());
                 }
-              } else {
-                fail("Cannot create environment for \""
-                    + subDirectoryFile.getAbsolutePath() + "\"");
               }
             } catch (Exception e) {
               e.printStackTrace();
