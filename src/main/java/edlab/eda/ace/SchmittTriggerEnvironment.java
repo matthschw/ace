@@ -1,7 +1,6 @@
 package edlab.eda.ace;
 
 import java.io.File;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -12,31 +11,28 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
 import edlab.eda.ardb.RealResultsDatabase;
+import edlab.eda.ardb.RealWaveform;
 import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
 
 /**
- * Environment for characterization of a NAND gate with 4 inputs.
+ * Environment for characterization of a Schmitt-Trigger.
  */
-public class Nand4Environment extends AnalogCircuitEnvironment {
+public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
 
-  public static final String DC0 = "dc0";
+  public static final String TRAN = "tran";
+  public static final double T1 = 1.0;
+  public static final double T2 = 100.0e-12;
 
-  public static final String DC1 = "dc1";
-
-  public static final String DC2 = "dc2";
-
-  public static final String DC3 = "dc3";
-
-  protected Nand4Environment(SpectreFactory factory, JSONObject jsonObject,
-      String netlist, File[] includeDirs) {
+  protected SchmittTriggerEnvironment(SpectreFactory factory,
+      JSONObject jsonObject, String netlist, File[] includeDirs) {
     super(factory, jsonObject, netlist, includeDirs);
   }
 
   /**
-   * Get a new environment for a NAND-gate with 4 inputs
+   * Get a new environment for a Schmitt-Trigger
    * 
    * @param simDir      Directory where simulation results are stored
    * @param circuitDir  Directory that contains all information of the circuit.
@@ -46,10 +42,10 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
    *                    include directories typically reference the model files
    *                    from the PDK.
    * 
-   * @return object of {@link Nand4Environment} when all parameters
-   *         are valid, <code>null</code> otherwise
+   * @return object of {@link SchmittTriggerEnvironment} when all parameters are
+   *         valid, <code>null</code> otherwise
    */
-  public static Nand4Environment get(String simDir, String circuitDir,
+  public static SchmittTriggerEnvironment get(String simDir, String circuitDir,
       String[] includeDirs) {
 
     File simDirFile = new File(simDir);
@@ -140,7 +136,8 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
       includeDirFiles[i] = includeDir;
     }
 
-    return new Nand4Environment(factory, jsonObj, netlist, includeDirFiles);
+    return new SchmittTriggerEnvironment(factory, jsonObj, netlist,
+        includeDirFiles);
   }
 
   @Override
@@ -165,40 +162,31 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
 
     RealResultsDatabase rdb;
 
-    if (!blacklistAnalyses.contains(DC0)) {
+    if (!blacklistAnalyses.contains(TRAN)) {
+      double vdd = 3.3;
+      try {
+        vdd = this.session.getNumericValueAttribute("vdd").doubleValue();
+      } catch (UnableToStartSession e) {
+      }
 
       rdb = RealResultsDatabase
           .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
 
-      this.performanceValues.put("vs0",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
+      RealWaveform i = rdb.getRealWaveform("I");
+      RealWaveform o = rdb.getRealWaveform("O");
 
-    if (!blacklistAnalyses.contains(DC1)) {
+      this.performanceValues.put("v_ih",
+          i.getValue(o.clip(0, T1).cross(vdd / 2, 1)).getValue());
+      this.performanceValues.put("v_il",
+          i.getValue(o.clip(T1, 2 * T1).cross(vdd / 2, 1)).getValue());
 
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
+      this.performanceValues.put("t_phl",
+          o.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue()
+              - i.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue());
 
-      this.performanceValues.put("vs1",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
-
-    if (!blacklistAnalyses.contains(DC2)) {
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("vs2",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
-
-    if (!blacklistAnalyses.contains(DC3)) {
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("vs3",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+      this.performanceValues.put("t_plh",
+          o.clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue()
+              - i.clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue());
     }
 
     return this;
