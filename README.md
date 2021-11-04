@@ -55,7 +55,7 @@ $ mvn install
 |  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes     | `SingleEndedOpampEnvironment`     |
 |  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)     | (un) symmetrical opamp with N differential pair and cascode | `SingleEndedOpampEnvironment`     |
 |  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
-|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)     | feed-foward opamp                                           | `SingleEndedOpampEnvironment`     |
+|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)     | feed-foward opamp                                           | `SingleEndedOpampEnvironment`     |
 |  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png) | NAND with 4 inputs                                          | `Nand4Environment`                |
 |  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)     | schmitt trigger                                             | `SchmittTriggerEnvironment`       |
 
