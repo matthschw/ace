@@ -55,6 +55,7 @@ $ mvn install
 |  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)     | symmetrical opamp with N differential pair and cascodes     | `SingleEndedOpampEnvironment`     |
 |  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)     | (un) symmetrical opamp with N differential pair and cascode | `SingleEndedOpampEnvironment`     |
 |  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)     | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
+|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)     | feed-foward opamp                                           | `SingleEndedOpampEnvironment`     |
 |  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png) | NAND with 4 inputs                                          | `Nand4Environment`                |
 |  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)     | schmitt trigger                                             | `SchmittTriggerEnvironment`       |
 
@@ -71,14 +72,16 @@ Some of the here referenced backends are proprietary.
   - [ ] op4
   - [ ] op5
   - [ ] op6
+  - [ ] op7
   - [x] nand4
-  - [ ] st1
+  - [x] st1
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
   - [x] op1
   - [x] op2
   - [x] op3
   - [x] op4
   - [x] op6
+  - [ ] op7
   - [x] nand4
   - [x] st1
 ## ToDo
