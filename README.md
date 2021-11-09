@@ -91,7 +91,7 @@ Some of the here referenced backends are proprietary.
   - [x] op6
   - [ ] op7
   - [x] op8
-  - [ ] op9
+  - [x] op9
   - [ ] op10
   - [ ] op11
   - [x] nand4
