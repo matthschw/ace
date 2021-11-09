@@ -229,9 +229,13 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         if (performance.has(REFERENCE_ID)) {
 
           reference = performance.getString(REFERENCE_ID);
-
-          this.performanceValues.put(key,
-              dcopResults.getRealValue(reference).getValue());
+          
+          if (dcopResults.isMember(reference)) {
+            this.performanceValues.put(key,
+                dcopResults.getRealValue(reference).getValue());
+          } else {
+            System.out.println("\"" + key + "\" not available in database");
+          }
         }
       }
 
@@ -261,8 +265,13 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
         performance = performances.getJSONObject(key);
 
         reference = performance.getString(REFERENCE_ID);
-        this.performanceValues.put(key,
-            dcmatchResults.getRealValue(reference).getValue());
+
+        if (dcmatchResults.isMember(reference)) {
+          this.performanceValues.put(key,
+              dcmatchResults.getRealValue(reference).getValue());
+        } else {
+          System.out.println("\"" + key + "\" not available in database");
+        }
       }
     }
 
