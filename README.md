@@ -69,15 +69,16 @@ They are added as submodule in `./resources`.
 Some of the here referenced backends are proprietary.
 
 - [sky130-1V8](https://github.com/matthschw/ace-sky130-1V8)
-  - [ ] op1
-  - [ ] op2
-  - [ ] op3
-  - [ ] op4
-  - [ ] op5
+  - [x] op1
+  - [x] op2
+  - [x] op3
+  - [x] op4
+  - [x] op5
   - [ ] op6
   - [ ] op7
   - [ ] op8
   - [ ] op9
+  - [ ] op10
   - [x] nand4
   - [x] st1
 - [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
@@ -89,6 +90,7 @@ Some of the here referenced backends are proprietary.
   - [ ] op7
   - [x] op8
   - [ ] op9
+  - [ ] op10
   - [x] nand4
   - [x] st1
 ## ToDo
