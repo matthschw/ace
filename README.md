@@ -78,11 +78,11 @@ Some of the here referenced backends are proprietary.
 |  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)      | &#10003;                                                   | &#10003;                                                    |
 |  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)      | &#10003;                                                   | &#10003;                                                    |
 |  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)      | &#10003;                                                   | &#10003;                                                    |
-|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)      | :white_large_square                                        | :white_large_square                                         |
+|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)      | &#10007;                                                   | &#10007;                                                    |
 |  [op8](https://raw.githubusercontent.com/matthschw/ace/main/figures/op8.png)      | &#10003;                                                   | &#10003;                                                    |
 |  [op9](https://raw.githubusercontent.com/matthschw/ace/main/figures/op9.png)      | &#10003;                                                   | &#10003;                                                    |
-|  [op10](https://raw.githubusercontent.com/matthschw/ace/main/figures/op10.png)    | :white_large_square                                        | :white_large_square                                         |
-|  [op11](https://raw.githubusercontent.com/matthschw/ace/main/figures/op11.png)    | :white_large_square                                        | :white_large_square                                         |
+|  [op10](https://raw.githubusercontent.com/matthschw/ace/main/figures/op10.png)    | &#10007;                                                   | &#10007;                                                    |
+|  [op11](https://raw.githubusercontent.com/matthschw/ace/main/figures/op11.png)    | &#10007;                                                   | &#10007;                                                    |
 |  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png)  | &#10003;                                                   | &#10003;                                                    |
 |  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)      | &#10003;                                                   | &#10003;                                                    |
 
