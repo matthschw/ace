@@ -49,17 +49,17 @@ $ mvn install
 
 | Circuit                                                                           | Description                                                 | Environment                       |
 | :-------------------------------------------------------------------------------: | :---------------------------------------------------------: | :-------------------------------: |
-|  [op1](https://raw.githubusercontent.com/matthschw/ace/main/figures/op1.png)      | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
-|  [op2](https://raw.githubusercontent.com/matthschw/ace/main/figures/op2.png)      | symmetrical opamp with N differential pair                  | `SingleEndedOpampEnvironment`     |
-|  [op3](https://raw.githubusercontent.com/matthschw/ace/main/figures/op3.png)      | (un) symmetrical opamp with N differential pair             | `SingleEndedOpampEnvironment`     |
-|  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)      | symmetrical opamp with N differential pair and cascodes     | `SingleEndedOpampEnvironment`     |
-|  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)      | (un) symmetrical opamp with N differential pair and cascode | `SingleEndedOpampEnvironment`     |
-|  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)      | miller opamp with N differential pair                       | `SingleEndedOpampEnvironment`     |
-|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)      | feed-foward opamp                                           | `SingleEndedOpampEnvironment`     |
-|  [op8](https://raw.githubusercontent.com/matthschw/ace/main/figures/op8.png)      | folded-cascode                                              | `SingleEndedOpampEnvironment`     |
-|  [op9](https://raw.githubusercontent.com/matthschw/ace/main/figures/op9.png)      | folded-cascode with wide-swing current mirror               | `SingleEndedOpampEnvironment`     |
-|  [op10](https://raw.githubusercontent.com/matthschw/ace/main/figures/op10.png)    | rail-to rail folded-cascode                                 | `SingleEndedOpampEnvironment`     |
-|  [op11](https://raw.githubusercontent.com/matthschw/ace/main/figures/op11.png)    | rail-to rail folded-cascode with wide-swing current mirror  | `SingleEndedOpampEnvironment`     |
+|  [op1](https://raw.githubusercontent.com/matthschw/ace/main/figures/op1.png)      | miller opamp with N differential pair                       |
+|  [op2](https://raw.githubusercontent.com/matthschw/ace/main/figures/op2.png)      | symmetrical opamp with N differential pair                  |
+|  [op3](https://raw.githubusercontent.com/matthschw/ace/main/figures/op3.png)      | (un) symmetrical opamp with N differential pair             |
+|  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)      | symmetrical opamp with N differential pair and cascodes     |
+|  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)      | (un) symmetrical opamp with N differential pair and cascode |
+|  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)      | miller opamp with N differential pair                       |
+|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)      | feed-foward opamp                                           |
+|  [op8](https://raw.githubusercontent.com/matthschw/ace/main/figures/op8.png)      | folded-cascode                                              |
+|  [op9](https://raw.githubusercontent.com/matthschw/ace/main/figures/op9.png)      | folded-cascode with wide-swing current mirror               |
+|  [op10](https://raw.githubusercontent.com/matthschw/ace/main/figures/op10.png)    | rail-to rail folded-cascode                                 |
+|  [op11](https://raw.githubusercontent.com/matthschw/ace/main/figures/op11.png)    | rail-to rail folded-cascode with wide-swing current mirror  |
 |  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png)  | NAND with 4 inputs                                          | `Nand4Environment`                |
 |  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)      | schmitt trigger                                             | `SchmittTriggerEnvironment`       |
 
@@ -69,33 +69,23 @@ Backends are provided in the following technologies (PDKs).
 They are added as submodule in `./resources`.
 Some of the here referenced backends are proprietary.
 
-- [sky130-1V8](https://github.com/matthschw/ace-sky130-1V8)
-  - [x] op1
-  - [x] op2
-  - [x] op3
-  - [x] op4
-  - [x] op5
-  - [ ] op6
-  - [ ] op7
-  - [ ] op8
-  - [ ] op9
-  - [ ] op10
-  - [ ] op11
-  - [x] nand4
-  - [x] st1
-- [xh035-3V3](https://gitlab-forschung.reutlingen-university.de/eda/ace-xh035-3v3)
-  - [x] op1
-  - [x] op2
-  - [x] op3
-  - [x] op4
-  - [x] op6
-  - [ ] op7
-  - [x] op8
-  - [x] op9
-  - [ ] op10
-  - [ ] op11
-  - [x] nand4
-  - [x] st1
+
+| Circuit                                                                           | [sky130-1V8](https://github.com/matthschw/ace-sky130-1V8)  | [gpdk180-1V8](https://github.com/matthschw/ace-sky130-1V8)  |
+| :-------------------------------------------------------------------------------: | :--------------------------------------------------------: | :---------------------------------------------------------: |
+|  [op1](https://raw.githubusercontent.com/matthschw/ace/main/figures/op1.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op2](https://raw.githubusercontent.com/matthschw/ace/main/figures/op2.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op3](https://raw.githubusercontent.com/matthschw/ace/main/figures/op3.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)      | :white_large_square                                        | :white_large_square                                         |
+|  [op8](https://raw.githubusercontent.com/matthschw/ace/main/figures/op8.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op9](https://raw.githubusercontent.com/matthschw/ace/main/figures/op9.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op10](https://raw.githubusercontent.com/matthschw/ace/main/figures/op10.png)    | :white_large_square                                        | :white_large_square                                         |
+|  [op11](https://raw.githubusercontent.com/matthschw/ace/main/figures/op11.png)    | :white_large_square                                        | :white_large_square                                         |
+|  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png)  | :white_check_mark                                          | :white_check_mark                                           |
+|  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)      | :white_check_mark                                          | :white_check_mark                                           |
+
 ## ToDo
 
 - Provide MWE
