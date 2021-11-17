@@ -72,19 +72,19 @@ Some of the here referenced backends are proprietary.
 
 | Circuit                                                                           | [sky130-1V8](https://github.com/matthschw/ace-sky130-1V8)  | [gpdk180-1V8](https://github.com/matthschw/ace-sky130-1V8)  |
 | :-------------------------------------------------------------------------------: | :--------------------------------------------------------: | :---------------------------------------------------------: |
-|  [op1](https://raw.githubusercontent.com/matthschw/ace/main/figures/op1.png)      | :white_check_mark                                          | :white_check_mark                                           |
-|  [op2](https://raw.githubusercontent.com/matthschw/ace/main/figures/op2.png)      | :white_check_mark                                          | :white_check_mark                                           |
-|  [op3](https://raw.githubusercontent.com/matthschw/ace/main/figures/op3.png)      | :white_check_mark                                          | :white_check_mark                                           |
-|  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)      | :white_check_mark                                          | :white_check_mark                                           |
-|  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)      | :white_check_mark                                          | :white_check_mark                                           |
-|  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op1](https://raw.githubusercontent.com/matthschw/ace/main/figures/op1.png)      | &#10003;                                                   | &#10003;                                                    |
+|  [op2](https://raw.githubusercontent.com/matthschw/ace/main/figures/op2.png)      | &#10003;                                                   | &#10003;                                                    |
+|  [op3](https://raw.githubusercontent.com/matthschw/ace/main/figures/op3.png)      | &#10003;                                                   | &#10003;                                                    |
+|  [op4](https://raw.githubusercontent.com/matthschw/ace/main/figures/op4.png)      | &#10003;                                                   | &#10003;                                                    |
+|  [op5](https://raw.githubusercontent.com/matthschw/ace/main/figures/op5.png)      | &#10003;                                                   | &#10003;                                                    |
+|  [op6](https://raw.githubusercontent.com/matthschw/ace/main/figures/op6.png)      | &#10003;                                                   | &#10003;                                                    |
 |  [op7](https://raw.githubusercontent.com/matthschw/ace/main/figures/op7.png)      | :white_large_square                                        | :white_large_square                                         |
-|  [op8](https://raw.githubusercontent.com/matthschw/ace/main/figures/op8.png)      | :white_check_mark                                          | :white_check_mark                                           |
-|  [op9](https://raw.githubusercontent.com/matthschw/ace/main/figures/op9.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [op8](https://raw.githubusercontent.com/matthschw/ace/main/figures/op8.png)      | &#10003;                                                   | &#10003;                                                    |
+|  [op9](https://raw.githubusercontent.com/matthschw/ace/main/figures/op9.png)      | &#10003;                                                   | &#10003;                                                    |
 |  [op10](https://raw.githubusercontent.com/matthschw/ace/main/figures/op10.png)    | :white_large_square                                        | :white_large_square                                         |
 |  [op11](https://raw.githubusercontent.com/matthschw/ace/main/figures/op11.png)    | :white_large_square                                        | :white_large_square                                         |
-|  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png)  | :white_check_mark                                          | :white_check_mark                                           |
-|  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)      | :white_check_mark                                          | :white_check_mark                                           |
+|  [nand4](https://raw.githubusercontent.com/matthschw/ace/main/figures/nand4.png)  | &#10003;                                                   | &#10003;                                                    |
+|  [st1](https://raw.githubusercontent.com/matthschw/ace/main/figures/st1.png)      | &#10003;                                                   | &#10003;                                                    |
 
 ## ToDo
 
