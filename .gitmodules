@@ -10,3 +10,6 @@
 [submodule "resource/xh018-1V8"]
 	path = resource/xh018-1V8
 	url = git@gitlab-forschung.reutlingen-university.de:eda/ace-xh018-1v8.git
+[submodule "resource/xt018-1V8"]
+	path = resource/xt018-1V8
+	url = git@gitlab-forschung.reutlingen-university.de:eda/ace-xt018-1v8.git
