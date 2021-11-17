@@ -7,3 +7,6 @@
 [submodule "resource/gpdk180-1V8"]
 	path = resource/gpdk180-1V8
 	url = git@github.com:matthschw/ace-gpdk180-1V8.git
+[submodule "resource/xh018-1V8"]
+	path = resource/xh018-1V8
+	url = git@gitlab-forschung.reutlingen-university.de:eda/ace-xh018-1v8.git
