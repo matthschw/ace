@@ -199,7 +199,6 @@ public abstract class AnalogCircuitEnvironment {
     for (String name : values.keySet()) {
 
       if (!this.set(name, values.get(name))) {
-
         return false;
       }
     }

@@ -172,6 +172,14 @@ public class Parameter {
         value = Math.round((value - this.min) / this.grid) * this.grid
             + this.min;
       }
+      
+      if (value > this.max) {
+        value = this.max;
+      }
+      
+      if (value < this.min) {
+        value = this.min;
+      }
     }
 
     return value;
