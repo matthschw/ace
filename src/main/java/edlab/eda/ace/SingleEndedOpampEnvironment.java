@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
@@ -17,6 +18,7 @@ import edlab.eda.ardb.RealValue;
 import edlab.eda.ardb.RealWaveform;
 import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
+import edlab.eda.cadence.rc.spectre.SpectreSession;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
 import edlab.eda.reader.nutmeg.NutmegComplexPlot;
@@ -71,8 +73,8 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
   public static final String DC4_ANALYSIS_ID = "dc4";
 
   private SingleEndedOpampEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, String netlist, File[] includeDirs) {
-    super(factory, jsonObject, netlist, includeDirs);
+      JSONObject jsonObject, File dir, File[] includeDirs) {
+    super(factory, jsonObject, dir, includeDirs);
   }
 
   /**
@@ -180,14 +182,34 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       includeDirFiles[i] = includeDir;
     }
 
-    return new SingleEndedOpampEnvironment(factory, jsonObj, netlist,
+    return new SingleEndedOpampEnvironment(factory, jsonObj, circuitDirFile,
         includeDirFiles);
+  }
+  
+  private void processResults() {
+    
+    this.performanceValues = new HashMap<String, HashMap<String,Double>>();
+    
+    for (Entry<String, SpectreSession> entry : this.sessions.entrySet()) {
+      
+      List<NutmegPlot> plots;
+      
+    }
+    
+    
   }
 
   @Override
   public SingleEndedOpampEnvironment simulate(Set<String> blacklistAnalyses) {
-
-    this.performanceValues = new HashMap<String, Double>();
+    
+    super.simulate(blacklistAnalyses);
+    
+    
+    
+    this.performanceValues = new HashMap<String, HashMap<String,Double>>();
+    
+    
+    
 
     List<NutmegPlot> plots;
 

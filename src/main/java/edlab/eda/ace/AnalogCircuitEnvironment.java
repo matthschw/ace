@@ -17,11 +17,16 @@ import org.json.JSONObject;
 import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.cadence.rc.spectre.SpectreSession;
+import edlab.eda.simulation.spectre.concurrent.ParallelizableSession;
+import edlab.eda.simulation.spectre.concurrent.SingleSpectreSession;
+import edlab.eda.simulation.spectre.concurrent.SpectreParallelExecuterFramework;
 
 /**
  * Environment for characterization of an analog circuit
  */
 public abstract class AnalogCircuitEnvironment {
+
+  public static final String NOMINAL_DEFAULT = "nom";
 
   public static final String NETLIST_FILE_NAME = "input.scs";
   public static final String JSON_FILE_NAME = "properties.json";
@@ -29,33 +34,59 @@ public abstract class AnalogCircuitEnvironment {
   public static final String PARAMETERS_ID = "parameters";
   public static final String PERFORMANCES_ID = "performances";
   public static final String REFERENCE_ID = "reference";
+  public static final String CORNERS_ID = "reference";
+  public static final String NETLIST_ID = "netlist";
 
-  protected SpectreSession session;
+  protected Map<String, SpectreSession> sessions = new HashMap<String, SpectreSession>();
+
   protected JSONObject jsonObject;
-  protected Map<String, Parameter> parameters;
 
+  protected Map<String, String> corners = new HashMap<String, String>();
+
+  protected Map<String, ParallelizableSession> parallelizableSessions = new HashMap<String, ParallelizableSession>();
+
+  protected Map<String, Parameter> parameters;
   protected Map<String, Double> parameterValues;
-  protected Map<String, Double> performanceValues;
+  
+  protected Map<String, HashMap<String, Double>> performanceValues;
+
   protected Map<String, String> errorMessage;
+  private SpectreFactory factory;
+  private File[] includeDirs;
+  private File dir;
+
+  private String nomCorner = null;
 
   protected AnalogCircuitEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, String netlist, File[] includeDirs) {
+      JSONObject jsonObject, File dir, File[] includeDirs) {
 
+    this.factory = factory;
+    this.includeDirs = includeDirs;
+    this.dir = dir;
     this.jsonObject = jsonObject;
 
-    this.session = factory.createSession();
+    Iterator<String> iterator;
+    String name;
 
-    for (File file : includeDirs) {
+    if (this.jsonObject.has(CORNERS_ID)) {
 
-      try {
+      JSONObject cornersJsonObject = this.jsonObject.getJSONObject(CORNERS_ID);
+      iterator = cornersJsonObject.keys();
 
-        this.session.addIncludeDirectory(file);
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
+      while (iterator.hasNext()) {
+
+        name = iterator.next();
+        this.corners.put(name,
+            cornersJsonObject.getJSONObject(name).getString(NETLIST_ID));
+
+        if (this.nomCorner == null) {
+          this.nomCorner = name;
+        }
       }
+    } else {
+      this.corners.put(NOMINAL_DEFAULT, NETLIST_FILE_NAME);
+      this.nomCorner = NOMINAL_DEFAULT;
     }
-
-    this.session.setNetlist(netlist);
 
     this.parameterValues = new HashMap<String, Double>();
     this.performanceValues = new HashMap<String, Double>();
@@ -66,8 +97,7 @@ public abstract class AnalogCircuitEnvironment {
     JSONObject parametersJsonObject = this.jsonObject
         .getJSONObject(PARAMETERS_ID);
 
-    Iterator<String> iterator = parametersJsonObject.keys();
-    String name;
+    iterator = parametersJsonObject.keys();
 
     Parameter parameter;
 
@@ -81,6 +111,51 @@ public abstract class AnalogCircuitEnvironment {
     }
   }
 
+  private void allocateSessions(Set<String> corners) {
+
+    SpectreSession session;
+
+    for (String corner : corners) {
+
+      if (!this.sessions.containsKey(corner)) {
+
+        session = factory.createSession(corner);
+
+        for (File file : this.includeDirs) {
+          try {
+            session.addIncludeDirectory(file);
+          } catch (FileNotFoundException e) {
+            e.printStackTrace();
+          }
+        }
+
+        try {
+          session.addIncludeDirectory(this.dir);
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        }
+
+        try {
+          session.setNetlist(new File(this.dir, this.corners.get(corner)));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+        this.sessions.put(corner, session);
+        this.parallelizableSessions.put(corner,
+            new SingleSpectreSession(session));
+
+        for (Entry<String, Double> entry : this.parameterValues.entrySet()) {
+          try {
+            session.setValueAttribute(entry.getKey(), entry.getValue());
+          } catch (UnableToStartSession e) {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Trigger a circuit simulation
    * 
@@ -88,8 +163,46 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return <code>this</code>
    */
-  public abstract AnalogCircuitEnvironment simulate(
-      Set<String> blacklistAnalyses);
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
+      Set<String> corners) {
+
+    if (corners == null || corners.isEmpty()) {
+      corners = new HashSet<String>();
+      corners.add(this.nomCorner);
+    }
+
+    this.allocateSessions(corners);
+
+    SpectreParallelExecuterFramework framework = new SpectreParallelExecuterFramework(
+        this.corners.size());
+    
+    for (ParallelizableSession session : this.parallelizableSessions.values()) {
+      framework.registerSession(session);
+    }
+    
+    try {
+      framework.start();
+    } catch (UnableToStartSession e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    return this;
+  }
+
+  /**
+   * Trigger a circuit simulation
+   * 
+   * @param blacklistAnalyses set of analyses to be ignored
+   * 
+   * @return <code>this</code>
+   */
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+
+    return this.simulate(new HashSet<String>(), corners);
+  }
 
   /**
    * Trigger a circuit simulation
@@ -97,7 +210,10 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>this</code>
    */
   public AnalogCircuitEnvironment simulate() {
-    return this.simulate(new HashSet<String>());
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+
+    return this.simulate(new HashSet<String>(), corners);
   }
 
   /**
@@ -105,7 +221,10 @@ public abstract class AnalogCircuitEnvironment {
    * stopped automatically when a timeout 15min with no action is exceeded.
    */
   public void stop() {
-    this.session.stop();
+
+    for (SpectreSession session : this.sessions.values()) {
+      session.stop();
+    }
   }
 
   /**
@@ -172,12 +291,17 @@ public abstract class AnalogCircuitEnvironment {
 
       this.parameterValues.put(name, value);
 
-      try {
-        return this.session.setValueAttribute(name, value);
-      } catch (UnableToStartSession e) {
-        e.printStackTrace();
-        return false;
+      for (Entry<String, SpectreSession> entry : this.sessions.entrySet()) {
+
+        try {
+          entry.getValue().setValueAttribute(name, value);
+        } catch (UnableToStartSession e) {
+          e.printStackTrace();
+          return false;
+        }
       }
+
+      return true;
 
     } else {
 
@@ -462,6 +586,6 @@ public abstract class AnalogCircuitEnvironment {
 
   @Override
   protected void finalize() {
-    this.session.stop();
+    this.stop();
   }
 }
