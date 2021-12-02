@@ -2,9 +2,9 @@ package edlab.eda.ace;
 
 import java.io.File;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
 import edlab.eda.ardb.RealResultsDatabase;
-import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
@@ -31,8 +30,8 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
   public static final String DC3 = "dc3";
 
   protected Nand4Environment(SpectreFactory factory, JSONObject jsonObject,
-      String netlist, File[] includeDirs) {
-    super(factory, jsonObject, netlist, includeDirs);
+      File dir, File[] includeDirs) {
+    super(factory, jsonObject, dir, includeDirs);
   }
 
   /**
@@ -46,8 +45,8 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
    *                    include directories typically reference the model files
    *                    from the PDK.
    * 
-   * @return object of {@link Nand4Environment} when all parameters
-   *         are valid, <code>null</code> otherwise
+   * @return object of {@link Nand4Environment} when all parameters are valid,
+   *         <code>null</code> otherwise
    */
   public static Nand4Environment get(String simDir, String circuitDir,
       String[] includeDirs) {
@@ -111,18 +110,6 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    String netlist;
-
-    try {
-
-      netlist = new String(Files.readAllBytes(netlistFile.toPath()));
-    } catch (IOException e) {
-
-      System.err.println("Cannot read file \"" + netlistFile.toString()
-          + "\", \n" + e.getMessage());
-      return null;
-    }
-
     File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 
@@ -140,67 +127,83 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
       includeDirFiles[i] = includeDir;
     }
 
-    return new Nand4Environment(factory, jsonObj, netlist, includeDirFiles);
+    return new Nand4Environment(factory, jsonObj, circuitDirFile,
+        includeDirFiles);
+  }
+
+  @Override
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
+      Set<String> corners) {
+
+    super.simulate(blacklistAnalyses, corners);
+
+    this.performanceValues = new HashMap<String, HashMap<String, Double>>();
+
+    List<NutmegPlot> plots;
+    int resultIdentifier;
+    HashMap<String, Double> performanceValues;
+
+    for (String corner : corners) {
+
+      resultIdentifier = 0;
+      plots = this.sessions.get(corner).getPlots();
+      performanceValues = new HashMap<String, Double>();
+
+      RealResultsDatabase rdb;
+
+      if (!blacklistAnalyses.contains(DC0)) {
+
+        rdb = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        performanceValues.put("vs0",
+            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+      }
+
+      if (!blacklistAnalyses.contains(DC1)) {
+
+        rdb = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        performanceValues.put("vs1",
+            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+      }
+
+      if (!blacklistAnalyses.contains(DC2)) {
+
+        rdb = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        performanceValues.put("vs2",
+            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+      }
+
+      if (!blacklistAnalyses.contains(DC3)) {
+
+        rdb = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        performanceValues.put("vs3",
+            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+      }
+      
+      this.performanceValues.put(corner, performanceValues);
+    }
+
+    return this;
   }
 
   @Override
   public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+    return this.simulate(blacklistAnalyses, corners);
+  }
 
-    this.performanceValues = new HashMap<String, Double>();
-
-    List<NutmegPlot> plots;
-
-    try {
-      if (blacklistAnalyses == null || blacklistAnalyses.isEmpty()) {
-        plots = this.session.simulate();
-      } else {
-        plots = this.session.simulate(blacklistAnalyses);
-      }
-    } catch (UnableToStartSession e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    int resultIdentifier = 0;
-
-    RealResultsDatabase rdb;
-
-    if (!blacklistAnalyses.contains(DC0)) {
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("vs0",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
-
-    if (!blacklistAnalyses.contains(DC1)) {
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("vs1",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
-
-    if (!blacklistAnalyses.contains(DC2)) {
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("vs2",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
-
-    if (!blacklistAnalyses.contains(DC3)) {
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("vs3",
-          rdb.getRealWaveform("O").cross(1.65, 1).getValue());
-    }
-
-    return this;
+  @Override
+  public AnalogCircuitEnvironment simulate() {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+    return this.simulate(new HashSet<String>(), corners);
   }
 }

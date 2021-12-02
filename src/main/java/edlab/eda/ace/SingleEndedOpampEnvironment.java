@@ -1,12 +1,11 @@
 package edlab.eda.ace;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
@@ -18,7 +17,6 @@ import edlab.eda.ardb.RealValue;
 import edlab.eda.ardb.RealWaveform;
 import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
-import edlab.eda.cadence.rc.spectre.SpectreSession;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
 import edlab.eda.reader.nutmeg.NutmegComplexPlot;
@@ -110,7 +108,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    factory.setTimeout(10, TimeUnit.SECONDS);
+    factory.setTimeout(1000, TimeUnit.SECONDS);
 
     File circuitDirFile = new File(circuitDir);
 
@@ -143,28 +141,6 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    File netlistFile = new File(circuitDirFile,
-        AnalogCircuitEnvironment.NETLIST_FILE_NAME);
-
-    if (!(netlistFile.exists() && netlistFile.canRead())) {
-
-      System.err
-          .println("Cannot read netlist \"" + netlistFile.toString() + "\"");
-      return null;
-    }
-
-    String netlist;
-
-    try {
-
-      netlist = new String(Files.readAllBytes(netlistFile.toPath()));
-    } catch (IOException e) {
-
-      System.err.println("Cannot read file \"" + netlistFile.toString()
-          + "\", \n" + e.getMessage());
-      return null;
-    }
-
     File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 
@@ -185,46 +161,20 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     return new SingleEndedOpampEnvironment(factory, jsonObj, circuitDirFile,
         includeDirFiles);
   }
-  
-  private void processResults() {
-    
-    this.performanceValues = new HashMap<String, HashMap<String,Double>>();
-    
-    for (Entry<String, SpectreSession> entry : this.sessions.entrySet()) {
-      
-      List<NutmegPlot> plots;
-      
-    }
-    
-    
-  }
 
   @Override
-  public SingleEndedOpampEnvironment simulate(Set<String> blacklistAnalyses) {
-    
-    super.simulate(blacklistAnalyses);
-    
-    
-    
-    this.performanceValues = new HashMap<String, HashMap<String,Double>>();
-    
-    
-    
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
+      Set<String> corners) {
+
+    super.simulate(blacklistAnalyses, corners);
+
+    this.performanceValues = new HashMap<String, HashMap<String, Double>>();
+
+    HashMap<String, Double> performanceValues;
 
     List<NutmegPlot> plots;
 
-    try {
-      if (blacklistAnalyses == null || blacklistAnalyses.isEmpty()) {
-        plots = this.session.simulate();
-      } else {
-        plots = this.session.simulate(blacklistAnalyses);
-      }
-    } catch (UnableToStartSession e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    int resultIdentifier = 0;
+    int resultIdentifier;
 
     JSONObject performances;
 
@@ -233,285 +183,314 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     JSONObject performance;
     String reference;
 
-    // Extract the result from "dcop" analysis
-    performances = this.jsonObject.getJSONObject(PERFORMANCES_ID)
-        .getJSONObject(DCOP_ANALYSIS_ID);
-    iterator = performances.keys();
+    double area = Double.NaN;
 
-    if (!blacklistAnalyses.contains(DCOP_ANALYSIS_ID)) {
+    try {
+      area = this.sessions.get(corners.iterator().next())
+          .getSession().getNumericValueAttribute("A").doubleValue();
+    } catch (UnableToStartSession e) {
+    }
 
-      RealResultsDatabase dcopResults = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
+    for (String corner : corners) {
 
-      while (iterator.hasNext()) {
+      resultIdentifier = 0;
 
-        key = iterator.next();
-        performance = performances.getJSONObject(key);
+      plots = this.sessions.get(corner).getPlots();
 
-        if (performance.has(REFERENCE_ID)) {
+      performanceValues = new HashMap<String, Double>();
+
+      // Extract the result from "dcop" analysis
+      performances = this.jsonObject.getJSONObject(PERFORMANCES_ID)
+          .getJSONObject(DCOP_ANALYSIS_ID);
+      iterator = performances.keys();
+
+      if (!blacklistAnalyses.contains(DCOP_ANALYSIS_ID)) {
+
+        RealResultsDatabase dcopResults = RealResultsDatabase
+            .buildResultDatabase(
+                (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        while (iterator.hasNext()) {
+
+          key = iterator.next();
+          performance = performances.getJSONObject(key);
+
+          if (performance.has(REFERENCE_ID)) {
+
+            reference = performance.getString(REFERENCE_ID);
+
+            if (dcopResults.isMember(reference)) {
+              performanceValues.put(key,
+                  dcopResults.getRealValue(reference).getValue());
+            } else {
+              System.out.println("\"" + key + "\" not available in database");
+            }
+          }
+        }
+        performanceValues.put("A", area);
+      }
+
+      // Extract the result from "dcmatch" analysis
+      performances = this.jsonObject.getJSONObject(PERFORMANCES_ID)
+          .getJSONObject(DCMATCH_ANALYSIS_ID);
+      iterator = performances.keys();
+
+      if (!blacklistAnalyses.contains(DCMATCH_ANALYSIS_ID)) {
+
+        RealResultsDatabase dcmatchResults = RealResultsDatabase
+            .buildResultDatabase(
+                (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        while (iterator.hasNext()) {
+
+          key = iterator.next();
+          performance = performances.getJSONObject(key);
 
           reference = performance.getString(REFERENCE_ID);
-          
-          if (dcopResults.isMember(reference)) {
-            this.performanceValues.put(key,
-                dcopResults.getRealValue(reference).getValue());
+
+          if (dcmatchResults.isMember(reference)) {
+            performanceValues.put(key,
+                dcmatchResults.getRealValue(reference).getValue());
           } else {
-            System.out.println("\"" + key + "\" not available in database");
+            // System.out.println("\"" + key + "\" not available in database");
           }
         }
       }
 
-      try {
-        this.performanceValues.put("A",
-            this.session.getNumericValueAttribute("A").doubleValue());
-      } catch (UnableToStartSession e) {
-        e.printStackTrace();
-        return null;
+      // Extract the result from "stb" analysis
+      if (!blacklistAnalyses.contains(STB_ANALYSIS_ID)) {
+
+        NutmegComplexPlot plot = (NutmegComplexPlot) plots
+            .get(resultIdentifier++);
+
+        ComplexResultsDatabase stb = ComplexResultsDatabase
+            .buildResultDatabase(plot);
+
+        ComplexWaveform loopGain = stb.getComplexWaveform("loopGain");
+
+        // System.err.println(loopGain);
+
+        // waves.put("loopGain", loopGain);
+
+        RealWaveform loopGainAbs = loopGain.abs().db20();
+
+        RealWaveform loopGainPhase = loopGain.phaseDeg();
+
+        // waves.put("loopGainAbs", loopGainAbs);
+        // waves.put("loopGainPhase", loopGainPhase);
+
+        RealValue a0 = loopGainAbs.getValue(loopGainAbs.xmin());
+        RealValue ugbw = loopGainAbs.cross(0, 1);
+
+        RealValue pm = loopGainPhase.getValue(ugbw.getValue());
+
+        RealValue cof = loopGainPhase.cross(0, 1);
+
+        RealValue gm = loopGainAbs.getValue(cof.getValue());
+
+        performanceValues.put("a_0", a0.getValue());
+        performanceValues.put("ugbw", ugbw.getValue());
+        performanceValues.put("cof", cof.getValue());
+        performanceValues.put("pm", pm.getValue());
+        performanceValues.put("gm", gm.getValue());
+
       }
 
-    }
+      // Extract the result from "tran" analysis
+      if (!blacklistAnalyses.contains(TRAN_ANALYSIS_ID)) {
 
-    // Extract the result from "dcmatch" analysis
-    performances = this.jsonObject.getJSONObject(PERFORMANCES_ID)
-        .getJSONObject(DCMATCH_ANALYSIS_ID);
-    iterator = performances.keys();
+        RealResultsDatabase tran = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
 
-    if (!blacklistAnalyses.contains(DCMATCH_ANALYSIS_ID)) {
+        RealWaveform out = tran.getRealWaveform("OUT");
 
-      RealResultsDatabase dcmatchResults = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
+        RealWaveform rising = out.clip(100e-9, 50e-6);
+        RealWaveform falling = out.clip(50.1e-6, 99.9e-6);
 
-      while (iterator.hasNext()) {
+        double lower = 0.1 * this.getParameterValues().get("vs")
+            - getParameterValues().get("vs") / 2;
+        double upper = 0.9 * this.getParameterValues().get("vs")
+            - getParameterValues().get("vs") / 2;
 
-        key = iterator.next();
-        performance = performances.getJSONObject(key);
+        RealValue point1 = rising.cross(lower, 1);
+        RealValue point2 = rising.cross(upper, 1);
 
-        reference = performance.getString(REFERENCE_ID);
+        performanceValues.put("sr_r",
+            (upper - lower) / (point2.getValue() - point1.getValue()));
 
-        if (dcmatchResults.isMember(reference)) {
-          this.performanceValues.put(key,
-              dcmatchResults.getRealValue(reference).getValue());
-        } else {
-          System.out.println("\"" + key + "\" not available in database");
+        if (performanceValues.get("sr_r") == Double.NaN) {
+          performanceValues.put("sr_r", Double.MIN_VALUE);
         }
-      }
-    }
 
-    // Extract the result from "stb" analysis
-    if (!blacklistAnalyses.contains(STB_ANALYSIS_ID)) {
+        point1 = falling.cross(upper, 1);
+        point2 = falling.cross(lower, 1);
 
-      NutmegComplexPlot plot = (NutmegComplexPlot) plots
-          .get(resultIdentifier++);
+        performanceValues.put("sr_f",
+            (lower - upper) / (point2.getValue() - point1.getValue()));
 
-      ComplexResultsDatabase stb = ComplexResultsDatabase
-          .buildResultDatabase(plot);
+        if (performanceValues.get("sr_f") == Double.NaN) {
+          performanceValues.put("sr_f", Double.MAX_VALUE);
+        }
 
-      ComplexWaveform loopGain = stb.getComplexWaveform("loopGain");
+        performanceValues.put("overshoot_r",
+            100 * (rising.ymax().getValue() - out.getValue(50e-6).getValue())
+                / (out.getValue(50e-6).getValue()
+                    - out.getValue(100e-9).getValue()));
 
-      // System.err.println(loopGain);
+        if (performanceValues.get("overshoot_r") == Double.NaN) {
+          performanceValues.put("overshoot_r", Double.MAX_VALUE);
+        }
 
-      // waves.put("loopGain", loopGain);
+        performanceValues.put("overshoot_f",
+            100 * (falling.ymin().getValue() - out.getValue(90e-6).getValue())
+                / (out.getValue(90e-6).getValue()
+                    - out.getValue(50e-6).getValue()));
 
-      RealWaveform loopGainAbs = loopGain.abs().db20();
+        if (performanceValues.get("overshoot_f") == Double.NaN) {
+          performanceValues.put("overshoot_f", Double.MAX_VALUE);
+        }
 
-      RealWaveform loopGainPhase = loopGain.phaseDeg();
-
-      // waves.put("loopGainAbs", loopGainAbs);
-      // waves.put("loopGainPhase", loopGainPhase);
-
-      RealValue a0 = loopGainAbs.getValue(loopGainAbs.xmin());
-      RealValue ugbw = loopGainAbs.cross(0, 1);
-
-      RealValue pm = loopGainPhase.getValue(ugbw.getValue());
-
-      RealValue cof = loopGainPhase.cross(0, 1);
-
-      RealValue gm = loopGainAbs.getValue(cof.getValue());
-
-      this.performanceValues.put("a_0", a0.getValue());
-      this.performanceValues.put("ugbw", ugbw.getValue());
-      this.performanceValues.put("cof", cof.getValue());
-      this.performanceValues.put("pm", pm.getValue());
-      this.performanceValues.put("gm", gm.getValue());
-
-    }
-
-    // Extract the result from "tran" analysis
-    if (!blacklistAnalyses.contains(TRAN_ANALYSIS_ID)) {
-
-      RealResultsDatabase tran = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      RealWaveform out = tran.getRealWaveform("OUT");
-
-      RealWaveform rising = out.clip(100e-9, 50e-6);
-      RealWaveform falling = out.clip(50.1e-6, 99.9e-6);
-
-      double lower = 0.1 * this.getParameterValues().get("vs")
-          - getParameterValues().get("vs") / 2;
-      double upper = 0.9 * this.getParameterValues().get("vs")
-          - getParameterValues().get("vs") / 2;
-
-      RealValue point1 = rising.cross(lower, 1);
-      RealValue point2 = rising.cross(upper, 1);
-
-      this.performanceValues.put("sr_r",
-          (upper - lower) / (point2.getValue() - point1.getValue()));
-
-      if (this.performanceValues.get("sr_r") == Double.NaN) {
-        this.performanceValues.put("sr_r", Double.MIN_VALUE);
       }
 
-      point1 = falling.cross(upper, 1);
-      point2 = falling.cross(lower, 1);
+      // Extract the result from "noise" analysis
+      if (!blacklistAnalyses.contains(NOISE_ANALYSIS_ID)) {
 
-      this.performanceValues.put("sr_f",
-          (lower - upper) / (point2.getValue() - point1.getValue()));
+        RealResultsDatabase noise = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
 
-      if (this.performanceValues.get("sr_f") == Double.NaN) {
-        this.performanceValues.put("sr_f", Double.MAX_VALUE);
+        RealWaveform out = noise.getRealWaveform("out");
+
+        performanceValues.put("vn_1Hz", out.getValue(1).getValue());
+        performanceValues.put("vn_10Hz", out.getValue(10).getValue());
+        performanceValues.put("vn_100Hz", out.getValue(1e2).getValue());
+        performanceValues.put("vn_1kHz", out.getValue(1e3).getValue());
+        performanceValues.put("vn_10kHz", out.getValue(1e4).getValue());
+        performanceValues.put("vn_100kHz", out.getValue(1e5).getValue());
+
       }
 
-      this.performanceValues.put("overshoot_r", 100
-          * (rising.ymax().getValue() - out.getValue(50e-6).getValue())
-          / (out.getValue(50e-6).getValue() - out.getValue(100e-9).getValue()));
+      // Extract the result from "dc1" analysis
+      if (!blacklistAnalyses.contains(DC1_ANALYSIS_ID)) {
 
-      if (this.performanceValues.get("overshoot_r") == Double.NaN) {
-        this.performanceValues.put("overshoot_r", Double.MAX_VALUE);
+        RealResultsDatabase outswing = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        RealWaveform out = outswing.getRealWaveform("OUT");
+        RealWaveform out_ideal = outswing.getRealWaveform("OUT_IDEAL");
+        out = out.subtract(out.getValue(0));
+
+        RealWaveform rel_dev = out.subtract(out_ideal);
+
+        rel_dev = rel_dev.abs().divide(this.getParameterValues().get("vsup"));
+
+        RealWaveform rel_dev_lower = rel_dev.clip(rel_dev.xmin().getValue(), 0);
+        RealWaveform rel_dev_upper = rel_dev.clip(0, rel_dev.xmax().getValue());
+
+        RealValue vil = rel_dev_lower.cross(dev, 1);
+        RealValue vih = rel_dev_upper.cross(dev, 1);
+
+        RealValue voh = out.getValue(vih);
+        RealValue vol = out.getValue(vil);
+
+        performanceValues.put("v_ol",
+            vol.getValue() + this.getParameterValues().get("vsup") / 2);
+        performanceValues.put("v_oh",
+            voh.getValue() + this.getParameterValues().get("vsup") / 2);
+
+      } else {
+        this.performanceValues.remove("v_ol");
+        this.performanceValues.remove("v_oh");
       }
 
-      this.performanceValues.put("overshoot_f", 100
-          * (falling.ymin().getValue() - out.getValue(90e-6).getValue())
-          / (out.getValue(90e-6).getValue() - out.getValue(50e-6).getValue()));
+      // Extract the result from "xf" analysis
+      if (!blacklistAnalyses.contains(XF_ANALYSIS_ID)) {
 
-      if (this.performanceValues.get("overshoot_f") == Double.NaN) {
-        this.performanceValues.put("overshoot_f", Double.MAX_VALUE);
+        ComplexResultsDatabase tf = ComplexResultsDatabase.buildResultDatabase(
+            (NutmegComplexPlot) plots.get(resultIdentifier++));
+
+        ComplexWaveform vsupp = tf.getComplexWaveform("VSUPP");
+        ComplexWaveform vsupn = tf.getComplexWaveform("VSUPN");
+        ComplexWaveform vid = tf.getComplexWaveform("VID");
+        ComplexWaveform vicm = tf.getComplexWaveform("VICM");
+
+        RealWaveform vsuppAbs = vsupp.abs().db20();
+        RealWaveform vsupnAbs = vsupn.abs().db20();
+        RealWaveform vidAbs = vid.abs().db20();
+        RealWaveform vicmAbs = vicm.abs().db20();
+
+        RealWaveform psrr_p = vidAbs.subtract(vsuppAbs);
+        RealWaveform psrr_n = vidAbs.subtract(vsupnAbs);
+        RealWaveform cmrr = vidAbs.subtract(vicmAbs);
+
+        performanceValues.put("psrr_p",
+            psrr_p.getValue(psrr_p.xmin()).getValue());
+        performanceValues.put("psrr_n",
+            psrr_n.getValue(psrr_n.xmin()).getValue());
+        performanceValues.put("cmrr", cmrr.getValue(cmrr.xmin()).getValue());
+
       }
 
-    }
+      // Extract the result from "ac" analysis
+      if (!blacklistAnalyses.contains(AC_ANALYSIS_ID)) {
 
-    // Extract the result from "noise" analysis
-    if (!blacklistAnalyses.contains(NOISE_ANALYSIS_ID)) {
+        ComplexResultsDatabase inswing = ComplexResultsDatabase
+            .buildResultDatabase(
+                (NutmegComplexPlot) plots.get(resultIdentifier++));
 
-      RealResultsDatabase noise = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
+        RealWaveform out = inswing.getComplexWaveform("OUT").abs().db20();
 
-      RealWaveform out = noise.getRealWaveform("out");
+        RealWaveform rel_dev_lower = out.clip(out.xmin().getValue(), 0);
+        RealWaveform rel_dev_upper = out.clip(0, out.xmax().getValue());
 
-      this.performanceValues.put("vn_1Hz", out.getValue(1).getValue());
-      this.performanceValues.put("vn_10Hz", out.getValue(10).getValue());
-      this.performanceValues.put("vn_100Hz", out.getValue(1e2).getValue());
-      this.performanceValues.put("vn_1kHz", out.getValue(1e3).getValue());
-      this.performanceValues.put("vn_10kHz", out.getValue(1e4).getValue());
-      this.performanceValues.put("vn_100kHz", out.getValue(1e5).getValue());
+        RealValue amp = out.getValue(0);
+        RealValue vil = rel_dev_lower.cross(amp.getValue() - 3, 1);
+        RealValue vih = rel_dev_upper.cross(amp.getValue() - 3, 1);
 
-    }
+        performanceValues.put("v_il",
+            vil.getValue() + this.getParameterValues().get("vsup") / 2);
+        performanceValues.put("v_ih",
+            vih.getValue() + this.getParameterValues().get("vsup") / 2);
+      }
 
-    // Extract the result from "dc1" analysis
-    if (!blacklistAnalyses.contains(DC1_ANALYSIS_ID)) {
+      // Extract the result from "dc3" analysis
+      if (!blacklistAnalyses.contains(DC3_ANALYSIS_ID)) {
 
-      RealResultsDatabase outswing = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
+        RealResultsDatabase outshortl = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
 
-      RealWaveform out = outswing.getRealWaveform("OUT");
-      RealWaveform out_ideal = outswing.getRealWaveform("OUT_IDEAL");
-      out = out.subtract(out.getValue(0));
+        performanceValues.put("i_out_min",
+            outshortl.getRealValue("DUT:O").getValue());
 
-      RealWaveform rel_dev = out.subtract(out_ideal);
+      }
 
-      rel_dev = rel_dev.abs().divide(this.getParameterValues().get("vsup"));
+      // Extract the result from "dc4" analysis
+      if (!blacklistAnalyses.contains(DC4_ANALYSIS_ID)) {
 
-      RealWaveform rel_dev_lower = rel_dev.clip(rel_dev.xmin().getValue(), 0);
-      RealWaveform rel_dev_upper = rel_dev.clip(0, rel_dev.xmax().getValue());
+        RealResultsDatabase outshorth = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
 
-      RealValue vil = rel_dev_lower.cross(dev, 1);
-      RealValue vih = rel_dev_upper.cross(dev, 1);
+        performanceValues.put("i_out_max",
+            outshorth.getRealValue("DUT:O").getValue());
+      }
 
-      RealValue voh = out.getValue(vih);
-      RealValue vol = out.getValue(vil);
-
-      this.performanceValues.put("v_ol",
-          vol.getValue() + this.getParameterValues().get("vsup") / 2);
-      this.performanceValues.put("v_oh",
-          voh.getValue() + this.getParameterValues().get("vsup") / 2);
-
-    } else {
-      this.performanceValues.remove("v_ol");
-      this.performanceValues.remove("v_oh");
-    }
-
-    // Extract the result from "xf" analysis
-    if (!blacklistAnalyses.contains(XF_ANALYSIS_ID)) {
-
-      ComplexResultsDatabase tf = ComplexResultsDatabase.buildResultDatabase(
-          (NutmegComplexPlot) plots.get(resultIdentifier++));
-
-      ComplexWaveform vsupp = tf.getComplexWaveform("VSUPP");
-      ComplexWaveform vsupn = tf.getComplexWaveform("VSUPN");
-      ComplexWaveform vid = tf.getComplexWaveform("VID");
-      ComplexWaveform vicm = tf.getComplexWaveform("VICM");
-
-      RealWaveform vsuppAbs = vsupp.abs().db20();
-      RealWaveform vsupnAbs = vsupn.abs().db20();
-      RealWaveform vidAbs = vid.abs().db20();
-      RealWaveform vicmAbs = vicm.abs().db20();
-
-      RealWaveform psrr_p = vidAbs.subtract(vsuppAbs);
-      RealWaveform psrr_n = vidAbs.subtract(vsupnAbs);
-      RealWaveform cmrr = vidAbs.subtract(vicmAbs);
-
-      this.performanceValues.put("psrr_p",
-          psrr_p.getValue(psrr_p.xmin()).getValue());
-      this.performanceValues.put("psrr_n",
-          psrr_n.getValue(psrr_n.xmin()).getValue());
-      this.performanceValues.put("cmrr", cmrr.getValue(cmrr.xmin()).getValue());
-
-    }
-
-    // Extract the result from "ac" analysis
-    if (!blacklistAnalyses.contains(AC_ANALYSIS_ID)) {
-
-      ComplexResultsDatabase inswing = ComplexResultsDatabase
-          .buildResultDatabase(
-              (NutmegComplexPlot) plots.get(resultIdentifier++));
-
-      RealWaveform out = inswing.getComplexWaveform("OUT").abs().db20();
-
-      RealWaveform rel_dev_lower = out.clip(out.xmin().getValue(), 0);
-      RealWaveform rel_dev_upper = out.clip(0, out.xmax().getValue());
-
-      RealValue amp = out.getValue(0);
-      RealValue vil = rel_dev_lower.cross(amp.getValue() - 3, 1);
-      RealValue vih = rel_dev_upper.cross(amp.getValue() - 3, 1);
-
-      this.performanceValues.put("v_il",
-          vil.getValue() + this.getParameterValues().get("vsup") / 2);
-      this.performanceValues.put("v_ih",
-          vih.getValue() + this.getParameterValues().get("vsup") / 2);
-    }
-
-    // Extract the result from "dc3" analysis
-    if (!blacklistAnalyses.contains(DC3_ANALYSIS_ID)) {
-
-      RealResultsDatabase outshortl = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("i_out_min",
-          outshortl.getRealValue("DUT:O").getValue());
-
-    }
-
-    // Extract the result from "dc4" analysis
-    if (!blacklistAnalyses.contains(DC4_ANALYSIS_ID)) {
-
-      RealResultsDatabase outshorth = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      this.performanceValues.put("i_out_max",
-          outshorth.getRealValue("DUT:O").getValue());
+      this.performanceValues.put(corner, performanceValues);
 
     }
 
     return this;
+  }
+
+  @Override
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+    return this.simulate(blacklistAnalyses, corners);
+  }
+
+  @Override
+  public AnalogCircuitEnvironment simulate() {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+    return this.simulate(new HashSet<String>(), corners);
   }
 }
