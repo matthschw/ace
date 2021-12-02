@@ -1,9 +1,9 @@
 package edlab.eda.ace;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -27,8 +27,8 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
   public static final double T2 = 100.0e-12;
 
   protected SchmittTriggerEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, String netlist, File[] includeDirs) {
-    super(factory, jsonObject, netlist, includeDirs);
+      JSONObject jsonObject, File dir, File[] includeDirs) {
+    super(factory, jsonObject, dir, includeDirs);
   }
 
   /**
@@ -107,18 +107,6 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    String netlist;
-
-    try {
-
-      netlist = new String(Files.readAllBytes(netlistFile.toPath()));
-    } catch (IOException e) {
-
-      System.err.println("Cannot read file \"" + netlistFile.toString()
-          + "\", \n" + e.getMessage());
-      return null;
-    }
-
     File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 
@@ -136,59 +124,77 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
       includeDirFiles[i] = includeDir;
     }
 
-    return new SchmittTriggerEnvironment(factory, jsonObj, netlist,
+    return new SchmittTriggerEnvironment(factory, jsonObj, circuitDirFile,
         includeDirFiles);
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
+      Set<String> corners) {
 
-    this.performanceValues = new HashMap<String, Double>();
+    super.simulate(blacklistAnalyses, corners);
+
+    this.performanceValues = new HashMap<String, HashMap<String, Double>>();
 
     List<NutmegPlot> plots;
+    int resultIdentifier;
+    HashMap<String, Double> performanceValues;
+    
+    double vdd = Double.NaN;
 
     try {
-      if (blacklistAnalyses == null || blacklistAnalyses.isEmpty()) {
-        plots = this.session.simulate();
-      } else {
-        plots = this.session.simulate(blacklistAnalyses);
-      }
+      vdd = this.sessions.get(corners.iterator().next())
+          .getSession().getNumericValueAttribute("vdd").doubleValue();
     } catch (UnableToStartSession e) {
-      e.printStackTrace();
-      return null;
     }
 
-    int resultIdentifier = 0;
+    for (String corner : corners) {
+      
+      resultIdentifier = 0;
+      plots = this.sessions.get(corner).getPlots();
+      performanceValues = new HashMap<String, Double>();
+      
+      RealResultsDatabase rdb;
 
-    RealResultsDatabase rdb;
+      if (!blacklistAnalyses.contains(TRAN)) {
 
-    if (!blacklistAnalyses.contains(TRAN)) {
-      double vdd = 3.3;
-      try {
-        vdd = this.session.getNumericValueAttribute("vdd").doubleValue();
-      } catch (UnableToStartSession e) {
+        rdb = RealResultsDatabase.buildResultDatabase(
+            (NutmegRealPlot) plots.get(resultIdentifier++));
+
+        RealWaveform i = rdb.getRealWaveform("I");
+        RealWaveform o = rdb.getRealWaveform("O");
+
+        performanceValues.put("v_ih",
+            i.getValue(o.clip(0, T1).cross(vdd / 2, 1)).getValue());
+        performanceValues.put("v_il",
+            i.getValue(o.clip(T1, 2 * T1).cross(vdd / 2, 1)).getValue());
+
+        performanceValues.put("t_phl",
+            o.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue()
+                - i.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue());
+
+       performanceValues.put("t_plh",
+            o.clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue() - i
+                .clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue());
       }
-
-      rdb = RealResultsDatabase
-          .buildResultDatabase((NutmegRealPlot) plots.get(resultIdentifier++));
-
-      RealWaveform i = rdb.getRealWaveform("I");
-      RealWaveform o = rdb.getRealWaveform("O");
-
-      this.performanceValues.put("v_ih",
-          i.getValue(o.clip(0, T1).cross(vdd / 2, 1)).getValue());
-      this.performanceValues.put("v_il",
-          i.getValue(o.clip(T1, 2 * T1).cross(vdd / 2, 1)).getValue());
-
-      this.performanceValues.put("t_phl",
-          o.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue()
-              - i.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue());
-
-      this.performanceValues.put("t_plh",
-          o.clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue()
-              - i.clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue());
+      
+      this.performanceValues.put(corner, performanceValues);
     }
 
     return this;
+  }
+
+  @Override
+  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+    return this.simulate(blacklistAnalyses, corners);
+  }
+
+  @Override
+  public AnalogCircuitEnvironment simulate() {
+    HashSet<String> corners = new HashSet<String>();
+    corners.add(this.nomCorner);
+    return this.simulate(new HashSet<String>(), corners);
   }
 }

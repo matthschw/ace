@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
+import java.util.HashSet;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -73,8 +74,7 @@ class AnalogCircuitEnvironmentTest {
 
                 case "SingleEndedOpampEnvironment":
 
-                  env = SingleEndedOpampEnvironment.get(
-                      resourcesFile.getAbsoluteFile().toString(),
+                  env = SingleEndedOpampEnvironment.get("/tmp",
                       subDirectoryFile.getAbsoluteFile().toString(),
                       new String[] { new File(subDirectoryFile, "./../pdk")
                           .getAbsoluteFile().toString() });
@@ -83,8 +83,7 @@ class AnalogCircuitEnvironmentTest {
 
                 case "Nand4Environment":
 
-                  env = Nand4Environment.get(
-                      resourcesFile.getAbsoluteFile().toString(),
+                  env = Nand4Environment.get("/tmp",
                       subDirectoryFile.getAbsoluteFile().toString(),
                       new String[] { new File(subDirectoryFile, "./../pdk")
                           .getAbsoluteFile().toString() });
@@ -92,8 +91,7 @@ class AnalogCircuitEnvironmentTest {
                   break;
                 case "SchmittTriggerEnvironment":
 
-                  env = SchmittTriggerEnvironment.get(
-                      resourcesFile.getAbsoluteFile().toString(),
+                  env = SchmittTriggerEnvironment.get("/tmp",
                       subDirectoryFile.getAbsoluteFile().toString(),
                       new String[] { new File(subDirectoryFile, "./../pdk")
                           .getAbsoluteFile().toString() });
@@ -111,21 +109,19 @@ class AnalogCircuitEnvironmentTest {
                   try {
 
                     for (int i = 0; i < NUM_OF_TESTS; i++) {
-                      
+
                       if (i > 0) {
                         env.set(env.getRandomSizingParameters());
                       }
 
-                      env.simulate();
-                      
+                      env.simulate(new HashSet<String>(), env.getCorners());
+
                       // check if result for all identifiers is available
                       /*
-                      for (String id : env.getPerformanceIdentifiers()) {
-                        if (env.getPerformanceValues().get(id) == null) {
-                          fail("Performance \"" + id + "\" missing");
-                        }
-                      }
-                      */
+                       * for (String id : env.getPerformanceIdentifiers()) { if
+                       * (env.getPerformanceValues().get(id) == null) {
+                       * fail("Performance \"" + id + "\" missing"); } }
+                       */
                     }
 
                     String file = env.saveStatus(true);
