@@ -100,16 +100,6 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    File netlistFile = new File(circuitDirFile,
-        AnalogCircuitEnvironment.NETLIST_FILE_NAME);
-
-    if (!(netlistFile.exists() && netlistFile.canRead())) {
-
-      System.err
-          .println("Cannot read netlist \"" + netlistFile.toString() + "\"");
-      return null;
-    }
-
     File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 

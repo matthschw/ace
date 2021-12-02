@@ -108,7 +108,7 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    factory.setTimeout(1000, TimeUnit.SECONDS);
+    factory.setTimeout(10, TimeUnit.SECONDS);
 
     File circuitDirFile = new File(circuitDir);
 
@@ -186,8 +186,8 @@ public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
     double area = Double.NaN;
 
     try {
-      area = this.sessions.get(corners.iterator().next())
-          .getSession().getNumericValueAttribute("A").doubleValue();
+      area = this.sessions.get(corners.iterator().next()).getSession()
+          .getNumericValueAttribute("A").doubleValue();
     } catch (UnableToStartSession e) {
     }
 
