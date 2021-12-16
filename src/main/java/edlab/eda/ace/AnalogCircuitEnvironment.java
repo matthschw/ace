@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -52,12 +53,15 @@ public abstract class AnalogCircuitEnvironment {
   private File[] includeDirs;
   private File dir;
 
+  private Thread parentThread = Thread.currentThread();
+
   protected String nomCorner = null;
 
   protected AnalogCircuitEnvironment(SpectreFactory factory,
       JSONObject jsonObject, File dir, File[] includeDirs) {
 
     this.factory = factory;
+    this.factory.setTimeout(1, TimeUnit.MINUTES);
     this.includeDirs = includeDirs;
     this.dir = dir;
     this.jsonObject = jsonObject;
@@ -94,7 +98,7 @@ public abstract class AnalogCircuitEnvironment {
       this.corners.put(NOMINAL_DEFAULT, NETLIST_FILE_NAME);
       this.nomCorner = NOMINAL_DEFAULT;
     }
-    
+
     this.parameterValues = new HashMap<String, Double>();
     this.performanceValues = new HashMap<String, HashMap<String, Double>>();
     this.parameters = new HashMap<String, Parameter>();
@@ -155,6 +159,8 @@ public abstract class AnalogCircuitEnvironment {
           e.printStackTrace();
         }
 
+        session.setParentThread(this.parentThread);
+
         this.sessions.put(corner, new ParallelSpectreSession(session));
       }
     }
@@ -179,6 +185,8 @@ public abstract class AnalogCircuitEnvironment {
 
     SpectreParallelExecuterFramework framework = new SpectreParallelExecuterFramework(
         this.corners.size());
+
+    framework.setParentThread(this.parentThread);
 
     ParallelizableSession session;
 

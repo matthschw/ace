@@ -14,13 +14,17 @@ public class EnvironmentPool {
     this.sessions = new HashMap<AnalogCircuitEnvironment, EnvironmentThread>();
   }
 
-  public void registerSession(AnalogCircuitEnvironment env) {
-    EnvironmentThread thread = new EnvironmentThread(env);
-    this.sessions.put(env, thread);
+  public boolean add(AnalogCircuitEnvironment env) {
+
+    if (env instanceof AnalogCircuitEnvironment) {
+      this.sessions.put(env, new EnvironmentThread(env));
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public boolean execute() {
-
     ExecutorService executor = Executors
         .newFixedThreadPool(this.sessions.size());
 
