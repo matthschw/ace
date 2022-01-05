@@ -15,11 +15,10 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
-import edlab.eda.cadence.rc.spectre.ParallelizableSession;
-import edlab.eda.cadence.rc.spectre.ParallelSpectreSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
-import edlab.eda.cadence.rc.spectre.SpectreParallelExecuterFramework;
-import edlab.eda.cadence.rc.spectre.SpectreSession;
+import edlab.eda.cadence.rc.spectre.SpectreInteractiveSession;
+import edlab.eda.cadence.rc.spectre.parallel.SpectreInteractiveParallelHandle;
+import edlab.eda.cadence.rc.spectre.parallel.SpectreParallelExecuterFramework;
 
 /**
  * Environment for characterization of an analog circuit
@@ -41,7 +40,7 @@ public abstract class AnalogCircuitEnvironment {
   protected JSONObject jsonObject;
 
   protected Map<String, String> corners = new HashMap<String, String>();
-  protected Map<String, ParallelizableSession> sessions = new HashMap<String, ParallelizableSession>();
+  protected Map<String, SpectreInteractiveParallelHandle> sessions = new HashMap<String, SpectreInteractiveParallelHandle>();
 
   protected Map<String, Parameter> parameters;
   protected Map<String, Double> parameterValues;
@@ -129,13 +128,13 @@ public abstract class AnalogCircuitEnvironment {
    */
   private void allocateSessions(Set<String> corners) {
 
-    SpectreSession session;
+    SpectreInteractiveSession session;
 
     for (String corner : corners) {
 
       if (!this.sessions.containsKey(corner)) {
 
-        session = this.factory.createSession(corner);
+        session = this.factory.createInteractiveSession(corner);
 
         for (File file : this.includeDirs) {
           try {
@@ -161,7 +160,8 @@ public abstract class AnalogCircuitEnvironment {
 
         session.setParentThread(this.parentThread);
 
-        this.sessions.put(corner, new ParallelSpectreSession(session));
+        this.sessions.put(corner,
+            new SpectreInteractiveParallelHandle(session));
       }
     }
   }
@@ -188,7 +188,7 @@ public abstract class AnalogCircuitEnvironment {
 
     framework.setParentThread(this.parentThread);
 
-    ParallelizableSession session;
+    SpectreInteractiveParallelHandle session;
 
     Map<String, Object> values;
 
@@ -248,7 +248,7 @@ public abstract class AnalogCircuitEnvironment {
    * stopped automatically when a timeout 15min with no action is exceeded.
    */
   public void stop() {
-    for (ParallelizableSession session : this.sessions.values()) {
+    for (SpectreInteractiveParallelHandle session : this.sessions.values()) {
       session.getSession().stop();
     }
   }
