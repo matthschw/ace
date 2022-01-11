@@ -3,6 +3,7 @@ package edlab.eda.ace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -15,6 +16,15 @@ public class EnvironmentPool {
 
   public EnvironmentPool() {
     this.sessions = new HashMap<AnalogCircuitEnvironment, EnvironmentThread>();
+  }
+
+  /**
+   * Get all environments in the pool
+   * 
+   * @return set of {@link AnalogCircuitEnvironment}
+   */
+  public Set<AnalogCircuitEnvironment> getEnvironemnts() {
+    return this.sessions.keySet();
   }
 
   /**
