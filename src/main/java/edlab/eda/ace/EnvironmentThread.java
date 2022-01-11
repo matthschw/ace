@@ -10,10 +10,8 @@ public class EnvironmentThread implements Runnable {
   }
 
   public void run() {
-
     this.env.simulate();
     this.finished = true;
-
   }
 
   public boolean isFinished() {
