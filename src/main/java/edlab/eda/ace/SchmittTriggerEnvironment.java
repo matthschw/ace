@@ -26,8 +26,8 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
   public static final double T1 = 1.0;
   public static final double T2 = 100.0e-12;
 
-  protected SchmittTriggerEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, File dir, File[] includeDirs) {
+  protected SchmittTriggerEnvironment(final SpectreFactory factory,
+      final JSONObject jsonObject, final File dir, final File[] includeDirs) {
     super(factory, jsonObject, dir, includeDirs);
   }
 
@@ -45,10 +45,10 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
    * @return object of {@link SchmittTriggerEnvironment} when all parameters are
    *         valid, <code>null</code> otherwise
    */
-  public static SchmittTriggerEnvironment get(String simDir, String circuitDir,
-      String[] includeDirs) {
+  public static SchmittTriggerEnvironment get(final String simDir, final String circuitDir,
+      final String[] includeDirs) {
 
-    File simDirFile = new File(simDir);
+    final File simDirFile = new File(simDir);
 
     if (!(simDirFile.exists() && simDirFile.isDirectory()
         && simDirFile.canRead())) {
@@ -57,7 +57,7 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    SpectreFactory factory = SpectreFactory.getSpectreFactory(simDirFile);
+    final SpectreFactory factory = SpectreFactory.getSpectreFactory(simDirFile);
 
     if (factory == null) {
       System.err.println("Unable to access simulator spectre");
@@ -66,7 +66,7 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
 
     factory.setTimeout(10, TimeUnit.SECONDS);
 
-    File circuitDirFile = new File(circuitDir);
+    final File circuitDirFile = new File(circuitDir);
 
     if (!(circuitDirFile.exists() && circuitDirFile.isDirectory()
         && circuitDirFile.canWrite())) {
@@ -74,7 +74,7 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    File jsonFile = new File(circuitDirFile,
+    final File jsonFile = new File(circuitDirFile,
         AnalogCircuitEnvironment.JSON_FILE_NAME);
 
     if (!(jsonFile.exists() && jsonFile.canRead())) {
@@ -90,14 +90,14 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
 
       jsonObj = new JSONObject(
           new String(Files.readAllBytes(jsonFile.toPath())));
-    } catch (Exception e) {
+    } catch (final Exception e) {
 
       System.err.println("Cannot read JSON \"" + jsonFile.toString() + "\"\n"
           + e.getMessage());
       return null;
     }
 
-    File[] includeDirFiles = new File[includeDirs.length];
+    final File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 
     for (int i = 0; i < includeDirFiles.length; i++) {
@@ -119,12 +119,12 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
-      Set<String> corners) {
+  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses,
+      final Set<String> corners) {
 
     super.simulate(blacklistAnalyses, corners);
 
-    this.performanceValues = new HashMap<String, HashMap<String, Double>>();
+    this.performanceValues = new HashMap<>();
 
     List<NutmegPlot> plots;
     int resultIdentifier;
@@ -135,14 +135,14 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
     try {
       vdd = this.sessions.get(corners.iterator().next())
           .getSession().getNumericValueAttribute("vdd").doubleValue();
-    } catch (UnableToStartSession e) {
+    } catch (final UnableToStartSession e) {
     }
 
-    for (String corner : corners) {
+    for (final String corner : corners) {
       
       resultIdentifier = 0;
       plots = this.sessions.get(corner).getPlots();
-      performanceValues = new HashMap<String, Double>();
+      performanceValues = new HashMap<>();
       
       RealResultsDatabase rdb;
 
@@ -151,8 +151,8 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
         rdb = RealResultsDatabase.buildResultDatabase(
             (NutmegRealPlot) plots.get(resultIdentifier++));
 
-        RealWaveform i = rdb.getRealWaveform("I");
-        RealWaveform o = rdb.getRealWaveform("O");
+        final RealWaveform i = rdb.getRealWaveform("I");
+        final RealWaveform o = rdb.getRealWaveform("O");
 
         performanceValues.put("v_ih",
             i.getValue(o.clip(0, T1).cross(vdd / 2, 1)).getValue());
@@ -164,8 +164,8 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
                 - i.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue());
 
        performanceValues.put("t_plh",
-            o.clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue() - i
-                .clip(4 * T1 + T2, 5 * T1 + T2).cross(vdd / 2, 1).getValue());
+            o.clip((4 * T1) + T2, (5 * T1) + T2).cross(vdd / 2, 1).getValue() - i
+                .clip((4 * T1) + T2, (5 * T1) + T2).cross(vdd / 2, 1).getValue());
       }
       
       this.performanceValues.put(corner, performanceValues);
@@ -175,15 +175,15 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
-    HashSet<String> corners = new HashSet<String>();
+  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses) {
+    final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
     return this.simulate(blacklistAnalyses, corners);
   }
 
   @Override
   public AnalogCircuitEnvironment simulate() {
-    HashSet<String> corners = new HashSet<String>();
+    final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
     return this.simulate(new HashSet<String>(), corners);
   }

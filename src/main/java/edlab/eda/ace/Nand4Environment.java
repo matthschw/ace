@@ -1,7 +1,6 @@
 package edlab.eda.ace;
 
 import java.io.File;
-
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,8 +28,8 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
 
   public static final String DC3 = "dc3";
 
-  protected Nand4Environment(SpectreFactory factory, JSONObject jsonObject,
-      File dir, File[] includeDirs) {
+  protected Nand4Environment(final SpectreFactory factory, final JSONObject jsonObject,
+      final File dir, final File[] includeDirs) {
     super(factory, jsonObject, dir, includeDirs);
   }
 
@@ -48,10 +47,10 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
    * @return object of {@link Nand4Environment} when all parameters are valid,
    *         <code>null</code> otherwise
    */
-  public static Nand4Environment get(String simDir, String circuitDir,
-      String[] includeDirs) {
+  public static Nand4Environment get(final String simDir, final String circuitDir,
+      final String[] includeDirs) {
 
-    File simDirFile = new File(simDir);
+    final File simDirFile = new File(simDir);
 
     if (!(simDirFile.exists() && simDirFile.isDirectory()
         && simDirFile.canRead())) {
@@ -60,7 +59,7 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    SpectreFactory factory = SpectreFactory.getSpectreFactory(simDirFile);
+    final SpectreFactory factory = SpectreFactory.getSpectreFactory(simDirFile);
 
     if (factory == null) {
       System.err.println("Unable to access simulator spectre");
@@ -69,7 +68,7 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
 
     factory.setTimeout(10, TimeUnit.SECONDS);
 
-    File circuitDirFile = new File(circuitDir);
+    final File circuitDirFile = new File(circuitDir);
 
     if (!(circuitDirFile.exists() && circuitDirFile.isDirectory()
         && circuitDirFile.canWrite())) {
@@ -77,7 +76,7 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    File jsonFile = new File(circuitDirFile,
+    final File jsonFile = new File(circuitDirFile,
         AnalogCircuitEnvironment.JSON_FILE_NAME);
 
     if (!(jsonFile.exists() && jsonFile.canRead())) {
@@ -93,14 +92,14 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
 
       jsonObj = new JSONObject(
           new String(Files.readAllBytes(jsonFile.toPath())));
-    } catch (Exception e) {
+    } catch (final Exception e) {
 
       System.err.println("Cannot read JSON \"" + jsonFile.toString() + "\"\n"
           + e.getMessage());
       return null;
     }
 
-    File[] includeDirFiles = new File[includeDirs.length];
+    final File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 
     for (int i = 0; i < includeDirFiles.length; i++) {
@@ -122,22 +121,22 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
-      Set<String> corners) {
+  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses,
+      final Set<String> corners) {
 
     super.simulate(blacklistAnalyses, corners);
 
-    this.performanceValues = new HashMap<String, HashMap<String, Double>>();
+    this.performanceValues = new HashMap<>();
 
     List<NutmegPlot> plots;
     int resultIdentifier;
     HashMap<String, Double> performanceValues;
 
-    for (String corner : corners) {
+    for (final String corner : corners) {
 
       resultIdentifier = 0;
       plots = this.sessions.get(corner).getPlots();
-      performanceValues = new HashMap<String, Double>();
+      performanceValues = new HashMap<>();
 
       RealResultsDatabase rdb;
 
@@ -184,15 +183,15 @@ public class Nand4Environment extends AnalogCircuitEnvironment {
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
-    HashSet<String> corners = new HashSet<String>();
+  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses) {
+    final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
     return this.simulate(blacklistAnalyses, corners);
   }
 
   @Override
   public AnalogCircuitEnvironment simulate() {
-    HashSet<String> corners = new HashSet<String>();
+    final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
     return this.simulate(new HashSet<String>(), corners);
   }

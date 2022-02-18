@@ -10,15 +10,15 @@ import org.json.JSONObject;
  */
 public class Parameter {
 
-  private String name;
+  private final String name;
   private double min = Double.MIN_VALUE;
   private double max = Double.MAX_VALUE;
   private double grid = Double.NaN;
   private double init = 0;
   private boolean sizing = true;
 
-  private Parameter(String name, double min, double max, double grid,
-      double init, boolean sizing) {
+  private Parameter(final String name, final double min, final double max, final double grid,
+      final double init, final boolean sizing) {
     this.name = name;
     this.min = min;
     this.max = max;
@@ -35,27 +35,27 @@ public class Parameter {
    * 
    * @return parameter
    */
-  static Parameter get(String name, JSONObject jsonObj) {
+  static Parameter get(final String name, final JSONObject jsonObj) {
 
     double min = Double.MIN_VALUE;
 
     try {
       min = jsonObj.getDouble("min");
-    } catch (Exception e) {
+    } catch (final Exception e) {
     }
 
     double max = Double.MAX_VALUE;
 
     try {
       max = jsonObj.getDouble("max");
-    } catch (Exception e) {
+    } catch (final Exception e) {
     }
 
     double grid = Double.NaN;
 
     try {
       grid = jsonObj.getDouble("grid");
-    } catch (Exception e) {
+    } catch (final Exception e) {
     }
 
     double init = 0;
@@ -63,7 +63,7 @@ public class Parameter {
     try {
       init = jsonObj.getDouble("init");
 
-    } catch (Exception e) {
+    } catch (final Exception e) {
 
       System.err.print(
           "No intial value is provided for \"" + name + "\", use 0 instead");
@@ -75,7 +75,7 @@ public class Parameter {
 
       sizing = jsonObj.getBoolean("sizing");
 
-    } catch (Exception e) {
+    } catch (final Exception e) {
     }
 
     return new Parameter(name, min, max, grid, init, sizing);
@@ -169,7 +169,7 @@ public class Parameter {
       }
 
       if (this.grid != Double.NaN) {
-        value = Math.round((value - this.min) / this.grid) * this.grid
+        value = (Math.round((value - this.min) / this.grid) * this.grid)
             + this.min;
       }
       
@@ -194,24 +194,21 @@ public class Parameter {
 
     if (this.sizing) {
 
-      Random r = new Random();
+      final Random r = new Random();
 
       if (this.grid == Double.NaN) {
 
-        return this.min + (this.max - this.min) * r.nextDouble();
+        return this.min + ((this.max - this.min) * r.nextDouble());
+
+      } else if (this.max > this.min) {
+
+        final int i = r
+            .nextInt((int) Math.round((this.max - this.min) / this.grid));
+
+        return this.min + (this.grid * i);
 
       } else {
-
-        if (this.max > this.min) {
-
-          int i = r
-              .nextInt((int) Math.round((this.max - this.min) / this.grid));
-
-          return this.min + this.grid * i;
-
-        } else {
-          return this.min;
-        }
+        return this.min;
       }
 
     } else {

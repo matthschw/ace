@@ -12,10 +12,10 @@ import java.util.concurrent.Executors;
  */
 public class EnvironmentPool {
 
-  private Map<AnalogCircuitEnvironment, EnvironmentThread> sessions;
+  private final Map<AnalogCircuitEnvironment, EnvironmentThread> sessions;
 
   public EnvironmentPool() {
-    this.sessions = new HashMap<AnalogCircuitEnvironment, EnvironmentThread>();
+    this.sessions = new HashMap<>();
   }
 
   /**
@@ -34,7 +34,7 @@ public class EnvironmentPool {
    * @return <code>true</code> when the environment was added successfully,
    *         <code>false</code> otherwise
    */
-  public boolean add(AnalogCircuitEnvironment env) {
+  public boolean add(final AnalogCircuitEnvironment env) {
 
     if (env instanceof AnalogCircuitEnvironment) {
       this.sessions.put(env, new EnvironmentThread(env));
@@ -59,10 +59,10 @@ public class EnvironmentPool {
    * @param size maximal number of parallel simulations
    * @return <code>true</code> when successful, <code>false</code> otherwise
    */
-  public boolean execute(int size) {
-    ExecutorService executor = Executors.newFixedThreadPool(size);
+  public boolean execute(final int size) {
+    final ExecutorService executor = Executors.newFixedThreadPool(size);
 
-    for (Entry<AnalogCircuitEnvironment, EnvironmentThread> entry : sessions
+    for (final Entry<AnalogCircuitEnvironment, EnvironmentThread> entry : this.sessions
         .entrySet()) {
       executor.execute(entry.getValue());
     }
@@ -74,12 +74,12 @@ public class EnvironmentPool {
       i = 0;
 
       try {
-        Thread.sleep(1);
-      } catch (InterruptedException e) {
+        Thread.sleep(0, 1);
+      } catch (final InterruptedException e) {
       }
 
-      for (EnvironmentThread thread : this.sessions.values()) {
-        if (thread.isFinished()) {
+      for (final EnvironmentThread thread : this.sessions.values()) {
+        if (thread.isTerminated()) {
           i++;
         }
       }
@@ -89,13 +89,13 @@ public class EnvironmentPool {
 
     try {
       Thread.sleep(1);
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
     }
 
     while (!executor.isTerminated()) {
       try {
         Thread.sleep(1);
-      } catch (InterruptedException e) {
+      } catch (final InterruptedException e) {
       }
     }
 

@@ -43,15 +43,6 @@
 			</plugin>
 
 			<plugin>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.8.2</version>
-				<configuration>
-					<skip>true</skip>
-					<skipDeploy>true</skipDeploy>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.3.0</version>
 				<configuration>
@@ -62,27 +53,6 @@
 					<execution>
 						<goals>
 							<goal>javadoc</goal>
-						</goals>
-						<phase>site</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-scm-publish-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<serverId>github</serverId>
-					<pubScmUrl>scm:git:https://github.com/matthschw/ace.git</pubScmUrl>
-					<scmBranch>gh-pages</scmBranch>
-					<checkinComment>Updated JavaDocs via Maven</checkinComment>
-					<content>${project.build.directory}/apidocs</content>
-					<siteOutputEncoding>UTF-8</siteOutputEncoding>
-					<tryUpdate>true</tryUpdate>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>publish-scm</goal>
 						</goals>
 						<phase>site</phase>
 					</execution>
@@ -110,17 +80,17 @@
 		<dependency>
 			<groupId>edlab.eda</groupId>
 			<artifactId>analog-results-database</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>edlab.eda</groupId>
 			<artifactId>reader.nutmeg</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>edlab.eda</groupId>
 			<artifactId>cadence.rc.spectre</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.json</groupId>
@@ -131,6 +101,6 @@
 
 	<organization>
 		<name>Electronics &amp; Drives</name>
-		<url>https://www.electronics-and-drives.de/</url>
+		<url>https://www.electronics-and-drives.de</url>
 	</organization>
 </project>

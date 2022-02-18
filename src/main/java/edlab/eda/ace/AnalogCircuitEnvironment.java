@@ -10,15 +10,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.cadence.rc.spectre.SpectreInteractiveSession;
 import edlab.eda.cadence.rc.spectre.parallel.SpectreInteractiveParallelHandle;
-import edlab.eda.cadence.rc.spectre.parallel.SpectreParallelExecuterFramework;
+import edlab.eda.cadence.rc.spectre.parallel.SpectreParallelPool;
 
 /**
  * Environment for characterization of an analog circuit
@@ -39,8 +39,8 @@ public abstract class AnalogCircuitEnvironment {
 
   protected JSONObject jsonObject;
 
-  protected Map<String, String> corners = new HashMap<String, String>();
-  protected Map<String, SpectreInteractiveParallelHandle> sessions = new HashMap<String, SpectreInteractiveParallelHandle>();
+  protected Map<String, String> corners = new HashMap<>();
+  protected Map<String, SpectreInteractiveParallelHandle> sessions = new HashMap<>();
 
   protected Map<String, Parameter> parameters;
   protected Map<String, Double> parameterValues;
@@ -48,16 +48,19 @@ public abstract class AnalogCircuitEnvironment {
   protected HashMap<String, HashMap<String, Double>> performanceValues;
 
   protected Map<String, String> errorMessage;
-  private SpectreFactory factory;
-  private File[] includeDirs;
-  private File dir;
+  private final SpectreFactory factory;
+  private final File[] includeDirs;
+  private final File dir;
 
-  private Thread parentThread = Thread.currentThread();
+  private final Thread parentThread = Thread.currentThread();
 
   protected String nomCorner = null;
 
-  protected AnalogCircuitEnvironment(SpectreFactory factory,
-      JSONObject jsonObject, File dir, File[] includeDirs) {
+  protected boolean verbose = true;
+  protected boolean corrupted = false;
+
+  protected AnalogCircuitEnvironment(final SpectreFactory factory,
+      final JSONObject jsonObject, final File dir, final File[] includeDirs) {
 
     this.factory = factory;
     this.factory.setTimeout(1, TimeUnit.MINUTES);
@@ -70,7 +73,8 @@ public abstract class AnalogCircuitEnvironment {
 
     if (this.jsonObject.has(CORNERS_ID)) {
 
-      JSONObject cornersJsonObject = this.jsonObject.getJSONObject(CORNERS_ID);
+      final JSONObject cornersJsonObject = this.jsonObject
+          .getJSONObject(CORNERS_ID);
       iterator = cornersJsonObject.keys();
 
       while (iterator.hasNext()) {
@@ -98,13 +102,13 @@ public abstract class AnalogCircuitEnvironment {
       this.nomCorner = NOMINAL_DEFAULT;
     }
 
-    this.parameterValues = new HashMap<String, Double>();
-    this.performanceValues = new HashMap<String, HashMap<String, Double>>();
-    this.parameters = new HashMap<String, Parameter>();
+    this.parameterValues = new HashMap<>();
+    this.performanceValues = new HashMap<>();
+    this.parameters = new HashMap<>();
 
-    this.errorMessage = new HashMap<String, String>();
+    this.errorMessage = new HashMap<>();
 
-    JSONObject parametersJsonObject = this.jsonObject
+    final JSONObject parametersJsonObject = this.jsonObject
         .getJSONObject(PARAMETERS_ID);
 
     iterator = parametersJsonObject.keys();
@@ -122,24 +126,59 @@ public abstract class AnalogCircuitEnvironment {
   }
 
   /**
+   * Enable verbose mode. When simulation throws errors, they will be displayed
+   * in the console
+   * 
+   * @return this
+   */
+  public AnalogCircuitEnvironment enableVerbose() {
+    this.verbose = true;
+    return this;
+  }
+
+  /**
+   * Disable verbose mode. When simulation throws errors, they will not
+   * displayed in the console
+   * 
+   * @return this
+   */
+  public AnalogCircuitEnvironment disableVerbose() {
+    this.verbose = false;
+    return this;
+  }
+
+  /**
+   * Identify whether the run from last simulation is corrupted. Please enable
+   * verbose mode to identify the reason.
+   * 
+   * @return <code>true</code> when the result is corrupted, <code>false</code>
+   *         otherwise
+   * 
+   * @see AnalogCircuitEnvironment#enableVerbose()
+   */
+  public boolean isCorrupted() {
+    return this.corrupted;
+  }
+
+  /**
    * Allocate simulation sessions
    * 
    * @param corners set of corners to be simulated
    */
-  private void allocateSessions(Set<String> corners) {
+  private void allocateSessions(final Set<String> corners) {
 
     SpectreInteractiveSession session;
 
-    for (String corner : corners) {
+    for (final String corner : corners) {
 
       if (!this.sessions.containsKey(corner)) {
 
         session = this.factory.createInteractiveSession(corner);
 
-        for (File file : this.includeDirs) {
+        for (final File file : this.includeDirs) {
           try {
             session.addIncludeDirectory(file);
-          } catch (FileNotFoundException e) {
+          } catch (final FileNotFoundException e) {
             e.printStackTrace();
           }
         }
@@ -147,14 +186,14 @@ public abstract class AnalogCircuitEnvironment {
         if (this.jsonObject.has(CORNERS_ID)) {
           try {
             session.addIncludeDirectory(this.dir);
-          } catch (FileNotFoundException e) {
+          } catch (final FileNotFoundException e) {
             e.printStackTrace();
           }
         }
 
         try {
           session.setNetlist(new File(this.dir, this.corners.get(corner)));
-        } catch (IOException e) {
+        } catch (final IOException e) {
           e.printStackTrace();
         }
 
@@ -173,37 +212,38 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return <code>this</code>
    */
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses,
+  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses,
       Set<String> corners) {
 
-    if (corners == null || corners.isEmpty()) {
-      corners = new HashSet<String>();
+    if ((corners == null) || corners.isEmpty()) {
+      corners = new HashSet<>();
       corners.add(this.nomCorner);
     }
 
     this.allocateSessions(corners);
 
-    SpectreParallelExecuterFramework framework = new SpectreParallelExecuterFramework(
+    final SpectreParallelPool pool = new SpectreParallelPool(
         this.corners.size());
 
-    framework.setParentThread(this.parentThread);
+    pool.setParentThread(this.parentThread);
 
     SpectreInteractiveParallelHandle session;
 
     Map<String, Object> values;
 
-    for (String corner : corners) {
+    for (final String corner : corners) {
 
       if (this.sessions.containsKey(corner)) {
 
         session = this.sessions.get(corner);
 
-        framework.registerSession(session);
+        pool.registerSession(session);
         session.setBlackListAnalyses(blacklistAnalyses);
 
-        values = new HashMap<String, Object>();
+        values = new HashMap<>();
 
-        for (Entry<String, Double> entry : this.parameterValues.entrySet()) {
+        for (final Entry<String, Double> entry : this.parameterValues
+            .entrySet()) {
           values.put(entry.getKey(), entry.getValue());
         }
 
@@ -211,7 +251,7 @@ public abstract class AnalogCircuitEnvironment {
       }
     }
 
-    framework.run();
+    pool.run();
 
     return this;
   }
@@ -223,9 +263,10 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return <code>this</code>
    */
-  public AnalogCircuitEnvironment simulate(Set<String> blacklistAnalyses) {
+  public AnalogCircuitEnvironment simulate(
+      final Set<String> blacklistAnalyses) {
 
-    HashSet<String> corners = new HashSet<String>();
+    final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
 
     return this.simulate(new HashSet<String>(), corners);
@@ -237,7 +278,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>this</code>
    */
   public AnalogCircuitEnvironment simulate() {
-    HashSet<String> corners = new HashSet<String>();
+    final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
 
     return this.simulate(new HashSet<String>(), corners);
@@ -248,7 +289,8 @@ public abstract class AnalogCircuitEnvironment {
    * stopped automatically when a timeout 15min with no action is exceeded.
    */
   public void stop() {
-    for (SpectreInteractiveParallelHandle session : this.sessions.values()) {
+    for (final SpectreInteractiveParallelHandle session : this.sessions
+        .values()) {
       session.getSession().stop();
     }
   }
@@ -274,9 +316,9 @@ public abstract class AnalogCircuitEnvironment {
    */
   public Map<String, Parameter> getSizingParameters() {
 
-    Map<String, Parameter> retval = new HashMap<String, Parameter>();
+    final Map<String, Parameter> retval = new HashMap<>();
 
-    for (Entry<String, Parameter> entry : this.parameters.entrySet()) {
+    for (final Entry<String, Parameter> entry : this.parameters.entrySet()) {
       retval.put(entry.getKey(), entry.getValue());
     }
 
@@ -327,7 +369,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return map of performances
    */
-  public Map<String, Double> getPerformanceValues(String corner) {
+  public Map<String, Double> getPerformanceValues(final String corner) {
     return this.performanceValues.get(corner);
   }
 
@@ -349,7 +391,7 @@ public abstract class AnalogCircuitEnvironment {
    * @param value New value of the parameter
    * @return true
    */
-  public boolean set(String name, double value) {
+  public boolean set(final String name, double value) {
 
     if (this.parameters.containsKey(name)) {
 
@@ -361,7 +403,8 @@ public abstract class AnalogCircuitEnvironment {
 
     } else {
 
-      System.out.println(name + " is not a parameter");
+      System.err.println("\"" + name + "\" is not a parameter");
+
       return false;
     }
   }
@@ -374,9 +417,9 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>true</code> when all parameters are set correctly,
    *         <code>false</code> otherwise
    */
-  public boolean set(Map<String, Double> values) {
+  public boolean set(final Map<String, Double> values) {
 
-    for (String name : values.keySet()) {
+    for (final String name : values.keySet()) {
 
       if (!this.set(name, values.get(name))) {
         return false;
@@ -395,9 +438,9 @@ public abstract class AnalogCircuitEnvironment {
    */
   public Map<String, Double> getRandomSizingParameters() {
 
-    Map<String, Double> retval = new HashMap<String, Double>();
+    final Map<String, Double> retval = new HashMap<>();
 
-    for (Entry<String, Parameter> entry : this.parameters.entrySet()) {
+    for (final Entry<String, Parameter> entry : this.parameters.entrySet()) {
 
       if (entry.getValue().isSizingParameter()) {
         retval.put(entry.getKey(), entry.getValue().getRandom());
@@ -416,9 +459,9 @@ public abstract class AnalogCircuitEnvironment {
    */
   public Map<String, Double> getInitialSizingParameters() {
 
-    Map<String, Double> retval = new HashMap<String, Double>();
+    final Map<String, Double> retval = new HashMap<>();
 
-    for (Entry<String, Parameter> entry : this.parameters.entrySet()) {
+    for (final Entry<String, Parameter> entry : this.parameters.entrySet()) {
 
       if (entry.getValue().isSizingParameter()) {
 
@@ -435,9 +478,9 @@ public abstract class AnalogCircuitEnvironment {
    * @return set of analyses
    */
   public Set<String> getAnalyses() {
-    Set<String> retval = new HashSet<String>();
+    final Set<String> retval = new HashSet<>();
 
-    Iterator<String> analysesIterator = this.jsonObject
+    final Iterator<String> analysesIterator = this.jsonObject
         .getJSONObject(PERFORMANCES_ID).keys();
 
     while (analysesIterator.hasNext()) {
@@ -463,9 +506,10 @@ public abstract class AnalogCircuitEnvironment {
    */
   public JSONObject getStatus() {
 
-    JSONObject jsonObj = new JSONObject();
+    final JSONObject jsonObj = new JSONObject();
 
-    for (Entry<String, Double> entry : this.getParameterValues().entrySet()) {
+    for (final Entry<String, Double> entry : this.getParameterValues()
+        .entrySet()) {
       jsonObj.put(entry.getKey(), entry.getValue());
     }
 
@@ -480,9 +524,9 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>true</code> when the status of the environment was set
    *         correctly, <code>false</code> otherwise
    */
-  public boolean setStatus(JSONObject jsonObj) {
+  public boolean setStatus(final JSONObject jsonObj) {
 
-    for (String key : this.parameters.keySet()) {
+    for (final String key : this.parameters.keySet()) {
 
       if (jsonObj.getDouble(key) != Double.NaN) {
 
@@ -504,9 +548,9 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>true</code> when the status of the environment was set
    *         correctly, <code>false</code> otherwise
    */
-  public boolean setStatus(String file) {
+  public boolean setStatus(final String file) {
 
-    File jsonFile = new File(file);
+    final File jsonFile = new File(file);
 
     if (!(jsonFile.exists() && jsonFile.canRead())) {
 
@@ -521,7 +565,7 @@ public abstract class AnalogCircuitEnvironment {
 
       jsonObj = new JSONObject(
           new String(Files.readAllBytes(jsonFile.toPath())));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       System.err.println("Cannot read JSON \"" + jsonFile.toString() + "\"\n"
           + e.getMessage());
       return false;
@@ -540,13 +584,13 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return path to JSON file
    */
-  public String saveStatus(boolean deleteOnExit) {
+  public String saveStatus(final boolean deleteOnExit) {
 
     try {
 
-      File file = File.createTempFile("status", ".json");
+      final File file = File.createTempFile("status", ".json");
 
-      FileWriter writer = new FileWriter(file);
+      final FileWriter writer = new FileWriter(file);
       writer.write(this.getStatus().toString());
       writer.close();
 
@@ -556,7 +600,7 @@ public abstract class AnalogCircuitEnvironment {
 
       return file.getAbsolutePath();
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
       e.printStackTrace();
       return null;
     }
@@ -568,11 +612,12 @@ public abstract class AnalogCircuitEnvironment {
    * @param blacklistAnalyses analyses to be ignored during simulation
    * @return set of performance identifiers
    */
-  public Set<String> getPerformanceIdentifiers(Set<String> blacklistAnalyses) {
+  public Set<String> getPerformanceIdentifiers(
+      final Set<String> blacklistAnalyses) {
 
-    Set<String> retval = new HashSet<String>();
+    final Set<String> retval = new HashSet<>();
 
-    Iterator<String> analysesIterator = this.jsonObject
+    final Iterator<String> analysesIterator = this.jsonObject
         .getJSONObject(PERFORMANCES_ID).keys();
 
     Iterator<String> performanceIterator;
@@ -601,37 +646,38 @@ public abstract class AnalogCircuitEnvironment {
 
     int keyLen = 0;
 
-    for (String key : this.getParameters().keySet()) {
+    for (final String key : this.getParameters().keySet()) {
       keyLen = Math.max(keyLen, key.length());
     }
 
-    for (String key : this.getPerformanceIdentifiers()) {
+    for (final String key : this.getPerformanceIdentifiers()) {
       keyLen = Math.max(keyLen, key.length());
     }
 
-    StringBuilder builder = new StringBuilder();
+    final StringBuilder builder = new StringBuilder();
 
     builder.append("Parameters:");
 
-    for (Entry<String, Double> entry : this.getParameterValues().entrySet()) {
+    for (final Entry<String, Double> entry : this.getParameterValues()
+        .entrySet()) {
 
       builder.append("\n\t" + entry.getKey());
 
-      for (int i = 0; i < keyLen - entry.getKey().length(); i++) {
+      for (int i = 0; i < (keyLen - entry.getKey().length()); i++) {
         builder.append(" ");
       }
 
       builder.append(" : " + entry.getValue());
     }
 
-    for (String corner : this.performanceValues.keySet()) {
+    for (final String corner : this.performanceValues.keySet()) {
       builder.append("\n\n" + corner + " :");
-      for (Entry<String, Double> entry : this.getPerformanceValues(corner)
+      for (final Entry<String, Double> entry : this.getPerformanceValues(corner)
           .entrySet()) {
 
         builder.append("\n\t" + entry.getKey());
 
-        for (int i = 0; i < keyLen - entry.getKey().length(); i++) {
+        for (int i = 0; i < (keyLen - entry.getKey().length()); i++) {
           builder.append(" ");
         }
 
