@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 /**
  * Pool for parallel simulation
  */
-public class EnvironmentPool {
+public final class EnvironmentPool {
 
   private final Map<AnalogCircuitEnvironment, EnvironmentThread> sessions;
 

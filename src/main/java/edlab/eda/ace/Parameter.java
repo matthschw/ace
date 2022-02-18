@@ -8,7 +8,7 @@ import org.json.JSONObject;
  * The class {@link Parameter} is a handle that contains all information
  * regarding a parameter of the {@link AnalogCircuitEnvironment}.
  */
-public class Parameter {
+public final class Parameter {
 
   private final String name;
   private double min = Double.MIN_VALUE;
@@ -17,8 +17,8 @@ public class Parameter {
   private double init = 0;
   private boolean sizing = true;
 
-  private Parameter(final String name, final double min, final double max, final double grid,
-      final double init, final boolean sizing) {
+  private Parameter(final String name, final double min, final double max,
+      final double grid, final double init, final boolean sizing) {
     this.name = name;
     this.min = min;
     this.max = max;
@@ -172,11 +172,11 @@ public class Parameter {
         value = (Math.round((value - this.min) / this.grid) * this.grid)
             + this.min;
       }
-      
+
       if (value > this.max) {
         value = this.max;
       }
-      
+
       if (value < this.min) {
         value = this.min;
       }

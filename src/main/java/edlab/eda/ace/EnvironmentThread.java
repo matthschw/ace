@@ -1,11 +1,11 @@
 package edlab.eda.ace;
 
-public class EnvironmentThread implements Runnable {
+class EnvironmentThread implements Runnable {
 
   private final AnalogCircuitEnvironment env;
-  public boolean terminated = false;
+  private boolean terminated = false;
 
-  public EnvironmentThread(final AnalogCircuitEnvironment env) {
+  EnvironmentThread(final AnalogCircuitEnvironment env) {
     this.env = env;
   }
 
@@ -15,7 +15,7 @@ public class EnvironmentThread implements Runnable {
     this.terminated = true;
   }
 
-  public boolean isTerminated() {
+  boolean isTerminated() {
     return this.terminated;
   }
 }

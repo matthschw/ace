@@ -20,7 +20,7 @@ import edlab.eda.reader.nutmeg.NutmegRealPlot;
 /**
  * Environment for characterization of a Schmitt-Trigger.
  */
-public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
+public final class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
 
   public static final String TRAN = "tran";
   public static final double T1 = 1.0;
@@ -45,8 +45,8 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
    * @return object of {@link SchmittTriggerEnvironment} when all parameters are
    *         valid, <code>null</code> otherwise
    */
-  public static SchmittTriggerEnvironment get(final String simDir, final String circuitDir,
-      final String[] includeDirs) {
+  public static SchmittTriggerEnvironment get(final String simDir,
+      final String circuitDir, final String[] includeDirs) {
 
     final File simDirFile = new File(simDir);
 
@@ -129,21 +129,21 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
     List<NutmegPlot> plots;
     int resultIdentifier;
     HashMap<String, Double> performanceValues;
-    
+
     double vdd = Double.NaN;
 
     try {
-      vdd = this.sessions.get(corners.iterator().next())
-          .getSession().getNumericValueAttribute("vdd").doubleValue();
+      vdd = this.sessions.get(corners.iterator().next()).getSession()
+          .getNumericValueAttribute("vdd").doubleValue();
     } catch (final UnableToStartSession e) {
     }
 
     for (final String corner : corners) {
-      
+
       resultIdentifier = 0;
       plots = this.sessions.get(corner).getPlots();
       performanceValues = new HashMap<>();
-      
+
       RealResultsDatabase rdb;
 
       if (!blacklistAnalyses.contains(TRAN)) {
@@ -163,11 +163,12 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
             o.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue()
                 - i.clip(3 * T1, 4 * T1).cross(vdd / 2, 1).getValue());
 
-       performanceValues.put("t_plh",
-            o.clip((4 * T1) + T2, (5 * T1) + T2).cross(vdd / 2, 1).getValue() - i
-                .clip((4 * T1) + T2, (5 * T1) + T2).cross(vdd / 2, 1).getValue());
+        performanceValues.put("t_plh",
+            o.clip((4 * T1) + T2, (5 * T1) + T2).cross(vdd / 2, 1).getValue()
+                - i.clip((4 * T1) + T2, (5 * T1) + T2).cross(vdd / 2, 1)
+                    .getValue());
       }
-      
+
       this.performanceValues.put(corner, performanceValues);
     }
 
@@ -175,7 +176,8 @@ public class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses) {
+  public AnalogCircuitEnvironment simulate(
+      final Set<String> blacklistAnalyses) {
     final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
     return this.simulate(blacklistAnalyses, corners);

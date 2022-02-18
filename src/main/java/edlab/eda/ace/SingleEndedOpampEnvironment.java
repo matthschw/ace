@@ -26,7 +26,8 @@ import edlab.eda.reader.nutmeg.NutmegRealPlot;
 /**
  * Environment for characterization of a single-ended operational amplifier.
  */
-public class SingleEndedOpampEnvironment extends AnalogCircuitEnvironment {
+public final class SingleEndedOpampEnvironment
+    extends AnalogCircuitEnvironment {
 
   protected double dev = 1e-4;
   protected double settling_percentage = 5;
