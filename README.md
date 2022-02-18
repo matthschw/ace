@@ -11,7 +11,6 @@ Please install the following dependencies manually:
 - [cadence-remote-control](https://github.com/electronics-and-drives/cadence-remote-control) 
 - [spectre-remote-control](https://github.com/electronics-and-drives/spectre-remote-control) 
 - [analog-results-database](https://github.com/electronics-and-drives/analog-results-database) 
-- [ace](https://github.com/matthschw/ace) 
 
 Clone the corresponding repositories, 
 ```bash
@@ -99,7 +98,7 @@ Some of the here referenced backends are proprietary.
 - Work on `BandgapEnvironment`  
 ## License
 
-Copyright (C) 2021, [Electronics & Drives](https://www.electronics-and-drives.de/)
+Copyright (C) 2022, [Electronics & Drives](https://www.electronics-and-drives.de/)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
