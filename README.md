@@ -17,15 +17,23 @@ Clone the corresponding repositories,
 $ git clone --recursive  <PATH>
 ```
 enter the directory and execute
+
 ```bash
 $ mvn install
 ```
 
+The documentation can be created with 
+```bash
+mvn javadoc:javadoc
+```
+and accessed at  `./target/apidocs/index.html`.
+
+
 ## Dependencies
 
 - [Cadence® Spectre®](https://www.cadence.com/ko_KR/home/tools/custom-ic-analog-rf-design/circuit-simulation/spectre-simulation-platform.html) 19.1 or newer
-- [OpenJDK](https://openjdk.java.net/) 1.8 or newer 
-- [Apache Maven](https://maven.apache.org/) 3.6 or newer
+- [OpenJDK 1.8](https://openjdk.java.net/) or newer 
+- [Apache Maven 3.6](https://maven.apache.org/) or newer
 
 ## Environments
 
