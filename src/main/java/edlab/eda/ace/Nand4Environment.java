@@ -28,8 +28,8 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
 
   public static final String DC3 = "dc3";
 
-  protected Nand4Environment(final SpectreFactory factory, final JSONObject jsonObject,
-      final File dir, final File[] includeDirs) {
+  protected Nand4Environment(final SpectreFactory factory,
+      final JSONObject jsonObject, final File dir, final File[] includeDirs) {
     super(factory, jsonObject, dir, includeDirs);
   }
 
@@ -47,8 +47,8 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
    * @return object of {@link Nand4Environment} when all parameters are valid,
    *         <code>null</code> otherwise
    */
-  public static Nand4Environment get(final String simDir, final String circuitDir,
-      final String[] includeDirs) {
+  public static Nand4Environment get(final String simDir,
+      final String circuitDir, final String[] includeDirs) {
 
     final File simDirFile = new File(simDir);
 
@@ -87,8 +87,6 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
     }
 
     JSONObject jsonObj;
-    
-
 
     try {
 
@@ -134,6 +132,8 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
     int resultIdentifier;
     HashMap<String, Double> performanceValues;
 
+    double vdd = this.parameterValues.get("vdd");
+
     for (final String corner : corners) {
 
       resultIdentifier = 0;
@@ -148,7 +148,7 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
             (NutmegRealPlot) plots.get(resultIdentifier++));
 
         performanceValues.put("vs0",
-            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+            rdb.getRealWaveform("O").cross(vdd / 2, 1).getValue());
       }
 
       if (!blacklistAnalyses.contains(DC1)) {
@@ -157,7 +157,7 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
             (NutmegRealPlot) plots.get(resultIdentifier++));
 
         performanceValues.put("vs1",
-            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+            rdb.getRealWaveform("O").cross(vdd / 2, 1).getValue());
       }
 
       if (!blacklistAnalyses.contains(DC2)) {
@@ -166,7 +166,7 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
             (NutmegRealPlot) plots.get(resultIdentifier++));
 
         performanceValues.put("vs2",
-            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+            rdb.getRealWaveform("O").cross(vdd / 2, 1).getValue());
       }
 
       if (!blacklistAnalyses.contains(DC3)) {
@@ -175,9 +175,9 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
             (NutmegRealPlot) plots.get(resultIdentifier++));
 
         performanceValues.put("vs3",
-            rdb.getRealWaveform("O").cross(1.65, 1).getValue());
+            rdb.getRealWaveform("O").cross(vdd / 2, 1).getValue());
       }
-      
+
       this.performanceValues.put(corner, performanceValues);
     }
 
@@ -185,7 +185,8 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
   }
 
   @Override
-  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses) {
+  public AnalogCircuitEnvironment simulate(
+      final Set<String> blacklistAnalyses) {
     final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
     return this.simulate(blacklistAnalyses, corners);
