@@ -87,6 +87,8 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
     }
 
     JSONObject jsonObj;
+    
+
 
     try {
 

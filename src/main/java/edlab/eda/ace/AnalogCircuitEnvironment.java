@@ -75,6 +75,7 @@ public abstract class AnalogCircuitEnvironment {
 
       final JSONObject cornersJsonObject = this.jsonObject
           .getJSONObject(CORNERS_ID);
+
       iterator = cornersJsonObject.keys();
 
       while (iterator.hasNext()) {
@@ -122,6 +123,7 @@ public abstract class AnalogCircuitEnvironment {
 
       this.parameters.put(parameter.getName(), parameter);
       this.set(name, parameter.getInit());
+
     }
   }
 
@@ -419,14 +421,16 @@ public abstract class AnalogCircuitEnvironment {
    */
   public boolean set(final Map<String, Double> values) {
 
+    boolean retval = true;
+
     for (final String name : values.keySet()) {
 
       if (!this.set(name, values.get(name))) {
-        return false;
+        retval = false;
       }
     }
 
-    return true;
+    return retval;
   }
 
   /**

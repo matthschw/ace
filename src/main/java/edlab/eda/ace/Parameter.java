@@ -1,5 +1,8 @@
 package edlab.eda.ace;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Random;
 
 import org.json.JSONObject;
@@ -62,7 +65,6 @@ public final class Parameter {
 
     try {
       init = jsonObj.getDouble("init");
-
     } catch (final Exception e) {
 
       System.err.print(
@@ -169,8 +171,10 @@ public final class Parameter {
       }
 
       if (this.grid != Double.NaN) {
-        value = (Math.round((value - this.min) / this.grid) * this.grid)
-            + this.min;
+        value = new BigDecimal(value).subtract(new BigDecimal(this.min))
+            .divide(new BigDecimal(this.grid), RoundingMode.HALF_DOWN)
+            .multiply(new BigDecimal(this.grid)).add(new BigDecimal(this.min))
+            .round(MathContext.DECIMAL64).doubleValue();
       }
 
       if (value > this.max) {
