@@ -56,6 +56,9 @@ public abstract class AnalogCircuitEnvironment {
 
   protected String nomCorner = null;
 
+  private int numOfRuns = 0;
+  private int restartPeriod = Integer.MAX_VALUE;
+
   protected boolean verbose = true;
   protected boolean corrupted = false;
 
@@ -255,6 +258,17 @@ public abstract class AnalogCircuitEnvironment {
 
     pool.run();
 
+    this.numOfRuns++;
+
+    if (this.numOfRuns >= this.restartPeriod) {
+
+      this.numOfRuns = 0;
+
+      for (SpectreInteractiveParallelHandle handle : this.sessions.values()) {
+        handle.getSession().stop();
+      }
+    }
+
     return this;
   }
 
@@ -284,6 +298,32 @@ public abstract class AnalogCircuitEnvironment {
     corners.add(this.nomCorner);
 
     return this.simulate(new HashSet<String>(), corners);
+  }
+
+  /**
+   * Get the restart period
+   * 
+   * @return restart period
+   * @see #setRestartPeriod
+   */
+  public int getRestartPeriod() {
+    return this.restartPeriod;
+  }
+
+  /**
+   * Specify the restart period of the environment.
+   * 
+   * @param restartPeriod
+   * @return <code>this</code> when changing of the restart period was
+   *         successfully, <code>null</code> otherwise
+   */
+  public AnalogCircuitEnvironment setRestartPeriod(int restartPeriod) {
+    if (restartPeriod > 0) {
+      this.restartPeriod = restartPeriod;
+      return this;
+    } else {
+      return null;
+    }
   }
 
   /**
