@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
@@ -335,6 +336,31 @@ public abstract class AnalogCircuitEnvironment {
         .values()) {
       session.getSession().stop();
     }
+  }
+
+  /**
+   * Clear the environment. When this method is called, all simulation runs are
+   * stopped and the working directories are deleted
+   * 
+   * @return this
+   */
+  public AnalogCircuitEnvironment clear() {
+
+    for (final SpectreInteractiveParallelHandle session : this.sessions
+        .values()) {
+      
+      session.getSession().stop();
+
+      try {
+        FileUtils
+            .deleteDirectory(new File(session.getSession().getWorkingDir()));
+      } catch (IOException e) {
+      }
+    }
+
+    this.sessions = new HashMap<>();
+
+    return this;
   }
 
   /**
