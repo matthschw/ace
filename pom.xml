@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>edlab.eda</groupId>
 			<artifactId>analog-results-database</artifactId>
-			<version>0.0.2</version>
+	                <version>0.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>edlab.eda</groupId>
