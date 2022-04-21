@@ -16,7 +16,7 @@ import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
 
 /**
- * Environment for characterization of a NAND gate with 4 inputs.
+ * Environment for characterization of a NAND gate with 4 inputs
  */
 public final class Nand4Environment extends AnalogCircuitEnvironment {
 
