@@ -16,9 +16,9 @@ import edlab.eda.ardb.ComplexWaveform;
 import edlab.eda.ardb.RealResultsDatabase;
 import edlab.eda.ardb.RealValue;
 import edlab.eda.ardb.RealWaveform;
-import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
 import edlab.eda.cadence.rc.spectre.SpectreSession;
+import edlab.eda.cadence.rc.spectre.UnableToStartSpectreSession;
 import edlab.eda.reader.nutmeg.NutmegComplexPlot;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
@@ -98,9 +98,11 @@ public final class SingleEndedOpampEnvironment
     final File simDirFile = new File(simDir);
 
     if (!(simDirFile.exists() && simDirFile.isDirectory()
-        && simDirFile.canRead())) {
+        && simDirFile.canRead() && simDirFile.canWrite())) {
+
       System.err
           .println("Cannot write simulation results to \"" + simDir + "\"");
+
       return null;
     }
 
@@ -111,7 +113,7 @@ public final class SingleEndedOpampEnvironment
       return null;
     }
 
-    factory.setTimeout(10, TimeUnit.SECONDS);
+    factory.setWatchogTimeout(10, TimeUnit.SECONDS);
 
     final File circuitDirFile = new File(circuitDir);
 
@@ -161,8 +163,12 @@ public final class SingleEndedOpampEnvironment
       includeDirFiles[i] = includeDir;
     }
 
-    return new SingleEndedOpampEnvironment(factory, jsonObj, circuitDirFile,
-        includeDirFiles);
+    SingleEndedOpampEnvironment env = new SingleEndedOpampEnvironment(factory,
+        jsonObj, circuitDirFile, includeDirFiles);
+
+    env.setName(circuitDirFile.getName());
+    
+    return env;
   }
 
   private void identifiedCorruptedResults(String analysis, String corner) {
@@ -204,7 +210,12 @@ public final class SingleEndedOpampEnvironment
     try {
       area = this.sessions.get(corners.iterator().next()).getSession()
           .getNumericValueAttribute("A").doubleValue();
-    } catch (final UnableToStartSession e) {
+
+    } catch (UnableToStartSpectreSession e) {
+
+      e.printStackTrace();
+
+      System.err.print(e.readLogfile());
     }
 
     for (final String corner : corners) {

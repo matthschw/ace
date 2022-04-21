@@ -63,6 +63,8 @@ public abstract class AnalogCircuitEnvironment {
   protected boolean verbose = true;
   protected boolean corrupted = false;
 
+  private String name = "ace";
+
   protected AnalogCircuitEnvironment(final SpectreFactory factory,
       final JSONObject jsonObject, final File dir, final File[] includeDirs) {
 
@@ -143,6 +145,17 @@ public abstract class AnalogCircuitEnvironment {
   }
 
   /**
+   * Set the name of the environment
+   * 
+   * @param name Name
+   * @return this
+   */
+  public AnalogCircuitEnvironment setName(final String name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
    * Disable verbose mode. When simulation throws errors, they will not
    * displayed in the console
    * 
@@ -179,7 +192,8 @@ public abstract class AnalogCircuitEnvironment {
 
       if (!this.sessions.containsKey(corner)) {
 
-        session = this.factory.createInteractiveSession(corner);
+        session = this.factory
+            .createInteractiveSession(this.name + "." + corner);
 
         for (final File file : this.includeDirs) {
           try {
@@ -348,7 +362,7 @@ public abstract class AnalogCircuitEnvironment {
 
     for (final SpectreInteractiveParallelHandle session : this.sessions
         .values()) {
-      
+
       session.getSession().stop();
 
       try {

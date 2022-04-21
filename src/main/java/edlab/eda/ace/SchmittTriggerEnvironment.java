@@ -12,8 +12,8 @@ import org.json.JSONObject;
 
 import edlab.eda.ardb.RealResultsDatabase;
 import edlab.eda.ardb.RealWaveform;
-import edlab.eda.cadence.rc.session.UnableToStartSession;
 import edlab.eda.cadence.rc.spectre.SpectreFactory;
+import edlab.eda.cadence.rc.spectre.UnableToStartSpectreSession;
 import edlab.eda.reader.nutmeg.NutmegPlot;
 import edlab.eda.reader.nutmeg.NutmegRealPlot;
 
@@ -64,12 +64,12 @@ public final class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    factory.setTimeout(10, TimeUnit.SECONDS);
+    factory.setWatchogTimeout(10, TimeUnit.SECONDS);
 
     final File circuitDirFile = new File(circuitDir);
 
     if (!(circuitDirFile.exists() && circuitDirFile.isDirectory()
-        && circuitDirFile.canWrite())) {
+        && circuitDirFile.canWrite() && simDirFile.canWrite())) {
       System.err.println("\"" + circuitDirFile + "\" is not a directory");
       return null;
     }
@@ -135,7 +135,10 @@ public final class SchmittTriggerEnvironment extends AnalogCircuitEnvironment {
     try {
       vdd = this.sessions.get(corners.iterator().next()).getSession()
           .getNumericValueAttribute("vdd").doubleValue();
-    } catch (final UnableToStartSession e) {
+    } catch (UnableToStartSpectreSession e) {
+      e.printStackTrace();
+
+      System.err.print(e.readLogfile());
     }
 
     for (final String corner : corners) {
