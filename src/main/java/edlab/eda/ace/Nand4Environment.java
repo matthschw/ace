@@ -53,7 +53,8 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
     final File simDirFile = new File(simDir);
 
     if (!(simDirFile.exists() && simDirFile.isDirectory()
-        && simDirFile.canRead())) {
+        && simDirFile.canRead() && simDirFile.canWrite())) {
+
       System.err
           .println("Cannot write simulation results to \"" + simDir + "\"");
       return null;
@@ -66,7 +67,7 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    factory.setTimeout(10, TimeUnit.SECONDS);
+    factory.setWatchogTimeout(10, TimeUnit.SECONDS);
 
     final File circuitDirFile = new File(circuitDir);
 
