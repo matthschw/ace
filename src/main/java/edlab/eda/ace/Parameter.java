@@ -171,8 +171,10 @@ public final class Parameter {
       }
 
       if (this.grid != Double.NaN) {
+
         value = new BigDecimal(value).subtract(new BigDecimal(this.min))
             .divide(new BigDecimal(this.grid), RoundingMode.HALF_DOWN)
+            .setScale(0, RoundingMode.HALF_DOWN)
             .multiply(new BigDecimal(this.grid)).add(new BigDecimal(this.min))
             .round(MathContext.DECIMAL64).doubleValue();
       }
