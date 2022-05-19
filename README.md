@@ -104,9 +104,10 @@ Some of the here referenced backends are proprietary.
 - Work on `DifferentialOpampEnvironment`  
 - Work on `ComparatorEnvironment`  
 - Work on `BandgapEnvironment`  
+
 ## License
 
-Copyright (C) 2022, [Electronics & Drives](https://www.electronics-and-drives.de/)
+Copyright (C) 2022, [Reutlingen University](https://www.reutlingen-university.de), [Electronics & Drives](https://www.electronics-and-drives.de/)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
