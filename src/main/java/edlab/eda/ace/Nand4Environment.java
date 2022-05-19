@@ -100,8 +100,6 @@ public final class Nand4Environment extends AnalogCircuitEnvironment {
       return null;
     }
 
-    jsonObj.getJSONArray(circuitDir);
-
     final File[] includeDirFiles = new File[includeDirs.length];
     File includeDir;
 
