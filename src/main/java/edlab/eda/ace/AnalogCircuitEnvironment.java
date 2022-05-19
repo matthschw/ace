@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +39,8 @@ public abstract class AnalogCircuitEnvironment {
   public static final String NETLIST_ID = "netlist";
   public static final String NOMINAL_ID = "nominal";
 
+  public static final String SCALE_ID = "scale";
+
   protected JSONObject jsonObject;
 
   protected Map<String, String> corners = new HashMap<>();
@@ -52,6 +55,7 @@ public abstract class AnalogCircuitEnvironment {
   private final SpectreFactory factory;
   private final File[] includeDirs;
   private final File dir;
+  private BigDecimal scale;
 
   private final Thread parentThread = Thread.currentThread();
 
@@ -76,6 +80,16 @@ public abstract class AnalogCircuitEnvironment {
 
     Iterator<String> iterator;
     String name;
+
+    if (this.jsonObject.has(SCALE_ID)) {
+      try {
+        this.scale = this.jsonObject.getBigDecimal(SCALE_ID);
+      } catch (Exception e) {
+        this.scale = BigDecimal.ONE;
+      }
+    } else {
+      this.scale = BigDecimal.ONE;
+    }
 
     if (this.jsonObject.has(CORNERS_ID)) {
 
@@ -177,6 +191,15 @@ public abstract class AnalogCircuitEnvironment {
    */
   public boolean isCorrupted() {
     return this.corrupted;
+  }
+
+  /**
+   * Get the technology scaling
+   * 
+   * @return scale
+   */
+  public double getScale() {
+    return this.scale.doubleValue();
   }
 
   /**
