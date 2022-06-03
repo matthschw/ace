@@ -6,6 +6,7 @@
 	<artifactId>ace</artifactId>
 	<version>0.0.10</version>
 
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
@@ -80,7 +81,7 @@
 		<dependency>
 			<groupId>edlab.eda</groupId>
 			<artifactId>analog-results-database</artifactId>
-			<version>0.0.2</version>
+	                <version>0.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>edlab.eda</groupId>
