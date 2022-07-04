@@ -153,7 +153,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return this
    */
-  public AnalogCircuitEnvironment enableVerbose() {
+  public final AnalogCircuitEnvironment enableVerbose() {
     this.verbose = true;
     return this;
   }
@@ -164,7 +164,7 @@ public abstract class AnalogCircuitEnvironment {
    * @param name Name
    * @return this
    */
-  public AnalogCircuitEnvironment setName(final String name) {
+  public final AnalogCircuitEnvironment setName(final String name) {
     this.name = name;
     return this;
   }
@@ -175,7 +175,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return this
    */
-  public AnalogCircuitEnvironment disableVerbose() {
+  public final AnalogCircuitEnvironment disableVerbose() {
     this.verbose = false;
     return this;
   }
@@ -189,7 +189,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @see AnalogCircuitEnvironment#enableVerbose()
    */
-  public boolean isCorrupted() {
+  public final boolean isCorrupted() {
     return this.corrupted;
   }
 
@@ -198,7 +198,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return scale
    */
-  public double getScale() {
+  public final double getScale() {
     return this.scale.doubleValue();
   }
 
@@ -207,7 +207,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @param corners set of corners to be simulated
    */
-  private void allocateSessions(final Set<String> corners) {
+  private final void allocateSessions(final Set<String> corners) {
 
     SpectreInteractiveSession session;
 
@@ -255,7 +255,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return <code>this</code>
    */
-  public AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses,
+  public  AnalogCircuitEnvironment simulate(final Set<String> blacklistAnalyses,
       Set<String> corners) {
 
     if ((corners == null) || corners.isEmpty()) {
@@ -344,7 +344,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return restart period
    * @see #setRestartPeriod
    */
-  public int getRestartPeriod() {
+  public final int getRestartPeriod() {
     return this.restartPeriod;
   }
 
@@ -355,7 +355,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>this</code> when changing of the restart period was
    *         successfully, <code>null</code> otherwise
    */
-  public AnalogCircuitEnvironment setRestartPeriod(int restartPeriod) {
+  public final AnalogCircuitEnvironment setRestartPeriod(int restartPeriod) {
     if (restartPeriod > 0) {
       this.restartPeriod = restartPeriod;
       return this;
@@ -368,7 +368,7 @@ public abstract class AnalogCircuitEnvironment {
    * Stop the environment. When the method is not called, the environment is
    * stopped automatically when a timeout 15min with no action is exceeded.
    */
-  public void stop() {
+  public final void stop() {
     for (final SpectreInteractiveParallelHandle session : this.sessions
         .values()) {
       session.getSession().stop();
@@ -381,7 +381,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return this
    */
-  public AnalogCircuitEnvironment clear() {
+  public final AnalogCircuitEnvironment clear() {
 
     for (final SpectreInteractiveParallelHandle session : this.sessions
         .values()) {
@@ -407,7 +407,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return map of parameters
    */
-  public Map<String, Parameter> getParameters() {
+  public final Map<String, Parameter> getParameters() {
     return this.parameters;
   }
 
@@ -419,7 +419,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return map of parameters
    * @see Parameter#isSizingParameter()
    */
-  public Map<String, Parameter> getSizingParameters() {
+  public final Map<String, Parameter> getSizingParameters() {
 
     final Map<String, Parameter> retval = new HashMap<>();
 
@@ -435,7 +435,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return map of parameter names and parameter values
    */
-  public Map<String, Double> getParameterValues() {
+  public final Map<String, Double> getParameterValues() {
     return this.parameterValues;
   }
 
@@ -444,7 +444,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return name of nominal corner
    */
-  public String getNominalCorner() {
+  public final String getNominalCorner() {
     return this.nomCorner;
   }
 
@@ -453,7 +453,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return set of corners
    */
-  public Set<String> getCorners() {
+  public final Set<String> getCorners() {
     return this.corners.keySet();
   }
 
@@ -463,7 +463,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return map of performances
    */
-  public Map<String, Double> getPerformanceValues() {
+  public final Map<String, Double> getPerformanceValues() {
     return this.performanceValues.get(this.nomCorner);
   }
 
@@ -474,7 +474,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return map of performances
    */
-  public Map<String, Double> getPerformanceValues(final String corner) {
+  public final Map<String, Double> getPerformanceValues(final String corner) {
     return this.performanceValues.get(corner);
   }
 
@@ -485,7 +485,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return map of maps of performances
    */
-  public Map<String, HashMap<String, Double>> getAllPerformanceValues() {
+  public final Map<String, HashMap<String, Double>> getAllPerformanceValues() {
     return this.performanceValues;
   }
 
@@ -496,7 +496,7 @@ public abstract class AnalogCircuitEnvironment {
    * @param value New value of the parameter
    * @return true
    */
-  public boolean set(final String name, double value) {
+  public final boolean set(final String name, double value) {
 
     if (this.parameters.containsKey(name)) {
 
@@ -522,7 +522,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>true</code> when all parameters are set correctly,
    *         <code>false</code> otherwise
    */
-  public boolean set(final Map<String, Double> values) {
+  public final boolean set(final Map<String, Double> values) {
 
     boolean retval = true;
 
@@ -543,7 +543,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return map of parameters
    * @see Parameter#isSizingParameter()
    */
-  public Map<String, Double> getRandomSizingParameters() {
+  public final Map<String, Double> getRandomSizingParameters() {
 
     final Map<String, Double> retval = new HashMap<>();
 
@@ -564,7 +564,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return map of parameters
    * @see Parameter#isSizingParameter()
    */
-  public Map<String, Double> getInitialSizingParameters() {
+  public final Map<String, Double> getInitialSizingParameters() {
 
     final Map<String, Double> retval = new HashMap<>();
 
@@ -584,7 +584,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return set of analyses
    */
-  public Set<String> getAnalyses() {
+  public final Set<String> getAnalyses() {
     final Set<String> retval = new HashSet<>();
 
     final Iterator<String> analysesIterator = this.jsonObject
@@ -602,7 +602,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return set of performance identifiers
    */
-  public Set<String> getPerformanceIdentifiers() {
+  public final Set<String> getPerformanceIdentifiers() {
     return this.getPerformanceIdentifiers(new HashSet<String>());
   }
 
@@ -611,7 +611,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return JSON object
    */
-  public JSONObject getStatus() {
+  public final JSONObject getStatus() {
 
     final JSONObject jsonObj = new JSONObject();
 
@@ -631,7 +631,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>true</code> when the status of the environment was set
    *         correctly, <code>false</code> otherwise
    */
-  public boolean setStatus(final JSONObject jsonObj) {
+  public final boolean setStatus(final JSONObject jsonObj) {
 
     for (final String key : this.parameters.keySet()) {
 
@@ -655,7 +655,7 @@ public abstract class AnalogCircuitEnvironment {
    * @return <code>true</code> when the status of the environment was set
    *         correctly, <code>false</code> otherwise
    */
-  public boolean setStatus(final String file) {
+  public final boolean setStatus(final String file) {
 
     final File jsonFile = new File(file);
 
@@ -691,7 +691,7 @@ public abstract class AnalogCircuitEnvironment {
    * 
    * @return path to JSON file
    */
-  public String saveStatus(final boolean deleteOnExit) {
+  public final String saveStatus(final boolean deleteOnExit) {
 
     try {
 
@@ -719,7 +719,7 @@ public abstract class AnalogCircuitEnvironment {
    * @param blacklistAnalyses analyses to be ignored during simulation
    * @return set of performance identifiers
    */
-  public Set<String> getPerformanceIdentifiers(
+  public final Set<String> getPerformanceIdentifiers(
       final Set<String> blacklistAnalyses) {
 
     final Set<String> retval = new HashSet<>();
