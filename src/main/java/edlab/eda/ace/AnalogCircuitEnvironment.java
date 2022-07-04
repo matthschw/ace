@@ -323,7 +323,7 @@ public abstract class AnalogCircuitEnvironment {
     final HashSet<String> corners = new HashSet<>();
     corners.add(this.nomCorner);
 
-    return this.simulate(new HashSet<String>(), corners);
+    return this.simulate(blacklistAnalyses, corners);
   }
 
   /**
