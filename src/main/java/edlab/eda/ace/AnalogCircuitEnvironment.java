@@ -241,6 +241,14 @@ public abstract class AnalogCircuitEnvironment {
         }
 
         session.setParentThread(this.parentThread);
+       
+        for (Entry<String, Double> entry : this.parameterValues.entrySet()) {
+  
+          try {
+            session.setValueAttribute(entry.getKey(), entry.getValue());
+          } catch (Exception e) {
+          }
+        }
 
         this.sessions.put(corner,
             new SpectreInteractiveParallelHandle(session));
